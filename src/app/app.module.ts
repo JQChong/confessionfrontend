@@ -11,6 +11,7 @@ import { PostEditComponent } from './post-edit/post-edit.component';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
 import { PostPageComponent } from './post-page/post-page.component';
+import { AdminPageComponent } from './admin-page/admin-page.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { PostPageComponent } from './post-page/post-page.component';
     PostEditComponent,
     LoginComponent,
     LogoutComponent,
-    PostPageComponent
+    PostPageComponent,
+    AdminPageComponent
   ],
   imports: [
     BrowserModule,
