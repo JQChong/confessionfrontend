@@ -19,8 +19,17 @@ export class PostService {
     return this.httpClient.get(`${this.baseUrlPosts}/${id}`);
   }
 
+  getPostByStatus(status: boolean): Observable<any> {
+    const actualStatus = status ? 'True' : 'False';
+    return this.httpClient.get(`${this.baseUrlPosts}/?approved=${actualStatus}`);
+  }
+
   createPost(post: object): Observable<object> {
     return this.httpClient.post(`${this.baseUrlPosts}`, post);
+  }
+
+  approvePost(id: Number): Observable<any> {
+    return this.httpClient.patch(`${this.baseUrlPosts}/${id}`, { approved: true });
   }
 
   deletePost(id: Number): Observable<any> {

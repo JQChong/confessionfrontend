@@ -16,8 +16,17 @@ export class CommentService {
     return this.httpClient.get(`${this.baseUrlComments}/post/${id}`);
   }
 
+  getCommentsByStatus(status: boolean): Observable<any> {
+    const actualStatus = status ? 'True': 'False';
+    return this.httpClient.get(`${this.baseUrlComments}/?approved=${actualStatus}`);
+  }
+
   createComment(comment: object): Observable<object> {
     return this.httpClient.post(`${this.baseUrlComments}`, comment);
+  }
+
+  approveComment(id: Number): Observable<any> {
+    return this.httpClient.patch(`${this.baseUrlComments}/${id}`, { approved: true });
   }
 
   deleteComment(id: number): Observable<any> {

@@ -6,4 +6,5 @@ export class Comment {
     likes!: Number;
     time_created!: Date;
     poster!: String;
+    approved!: boolean
 }
