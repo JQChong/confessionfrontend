@@ -1,14 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { BaseService } from '../base.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PostService {
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(
+    private httpClient: HttpClient,
+    private baseService: BaseService
+  ) { }
 
+  // when url is confirmed, this needs to be moved to environment
   private baseUrlPosts = 'http://localhost:8000/api/posts';
 
   getPostList(): Observable<any> {
@@ -20,19 +25,22 @@ export class PostService {
   }
 
   getPostByStatus(status: boolean): Observable<any> {
-    const actualStatus = status ? 'True' : 'False';
-    return this.httpClient.get(`${this.baseUrlPosts}/?approved=${actualStatus}`);
+    return this.baseService.getObjectByStatus(this.baseUrlPosts, status);
   }
 
   createPost(post: object): Observable<object> {
-    return this.httpClient.post(`${this.baseUrlPosts}`, post);
+    return this.baseService.createObject(this.baseUrlPosts, post);
   }
 
   approvePost(id: Number): Observable<any> {
-    return this.httpClient.patch(`${this.baseUrlPosts}/${id}`, { approved: true });
+    return this.baseService.approveObject(this.baseUrlPosts, id);
+  }
+
+  updateLikes(id: number, likes: number): Observable<any> {
+    return this.baseService.updateLikes(this.baseUrlPosts, id, likes);
   }
 
   deletePost(id: Number): Observable<any> {
-    return this.httpClient.delete(`${this.baseUrlPosts}/${id}`);
+    return this.baseService.deleteObject(this.baseUrlPosts, id);
   }
 }

@@ -1,10 +1,11 @@
 import { Post } from '../post/post';
 
 export class Comment {
+    id!: number;
     post!: Post;
-    text!: String;
-    likes!: Number;
+    text!: string;
+    likes!: number;
     time_created!: Date;
-    poster!: String;
+    poster!: string;
     approved!: boolean
 }

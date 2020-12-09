@@ -1,35 +1,42 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { BaseService } from '../base.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommentService {
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(
+    private httpClient: HttpClient,
+    private baseService: BaseService
+  ) { }
 
+  // when url is confirmed, this needs to be moved to environment
   private baseUrlComments = 'http://localhost:8000/api/comments';
 
-  getCommentsByPost(id: Number): Observable<any> {
+  getCommentsByPost(id: number): Observable<any> {
     return this.httpClient.get(`${this.baseUrlComments}/post/${id}`);
   }
 
   getCommentsByStatus(status: boolean): Observable<any> {
-    const actualStatus = status ? 'True': 'False';
-    return this.httpClient.get(`${this.baseUrlComments}/?approved=${actualStatus}`);
+    return this.baseService.getObjectByStatus(this.baseUrlComments, status);
   }
 
   createComment(comment: object): Observable<object> {
-    return this.httpClient.post(`${this.baseUrlComments}`, comment);
+    return this.baseService.createObject(this.baseUrlComments, comment);
   }
 
-  approveComment(id: Number): Observable<any> {
-    return this.httpClient.patch(`${this.baseUrlComments}/${id}`, { approved: true });
+  approveComment(id: number): Observable<any> {
+    return this.baseService.approveObject(this.baseUrlComments, id);
+  }
+
+  updateLikes(id: number, likes: number): Observable<any> {
+    return this.baseService.updateLikes(this.baseUrlComments, id, likes);
   }
 
   deleteComment(id: number): Observable<any> {
-    return this.httpClient.delete(`${this.baseUrlComments}/${id}`);
+    return this.baseService.deleteObject(this.baseUrlComments, id);
   }
 }
