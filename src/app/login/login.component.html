@@ -1,1 +1,24 @@
-<p>login works!</p>
+<mat-card class="mat-elevation-z8">
+    <h2>Administrator Login</h2>
+
+    <form [formGroup]="loginForm">
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Username</mat-label>
+            <input matInput type="text" formControlName="username">
+        </mat-form-field>
+
+        <br>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Password</mat-label>
+            <input matInput [type]="hide? 'password':'text'" formControlName="password">
+            <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </mat-form-field>
+
+        <br>
+
+        <button mat-raised-button class="full-width" style="align-items: center;" color="primary" type="submit"
+            (click)="onSubmit()">Login</button>
+
+    </form>
+</mat-card>

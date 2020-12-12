@@ -25,6 +25,8 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ComponentBridgingService } from './model-service/componentbridging.service';
+import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
+import { ClientLayoutComponent } from './client-layout/client-layout.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +36,9 @@ import { ComponentBridgingService } from './model-service/componentbridging.serv
     LoginComponent,
     LogoutComponent,
     PostPageComponent,
-    AdminPageComponent
+    AdminPageComponent,
+    AdminLayoutComponent,
+    ClientLayoutComponent
   ],
   imports: [
     BrowserModule,
