@@ -7,6 +7,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PostEditComponent implements OnInit {
 
+  /**
+   * Intended method: Uh... it's a form, whaddaya expect???!! Though, if possible, include
+   * captcha in the form
+   */
+
   constructor() { }
 
   ngOnInit(): void {

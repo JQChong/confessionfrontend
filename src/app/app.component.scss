@@ -1,0 +1,9 @@
+.sticky {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+#home:link, #home:hover, #home:visited, #home:active {
+    color: #555555;
+}
