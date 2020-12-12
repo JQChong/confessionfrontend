@@ -24,6 +24,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { ComponentBridgingService } from './model-service/componentbridging.service';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,9 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatIconModule,
     FlexLayoutModule
   ],
-  providers: [],
+  providers: [
+    ComponentBridgingService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
