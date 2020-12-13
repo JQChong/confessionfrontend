@@ -9,8 +9,9 @@ import { PostListComponent } from './post-list/post-list.component';
 import { PostPageComponent } from './post-page/post-page.component';
 
 const routes: Routes = [
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
   {
-    path: '', component: ClientLayoutComponent, pathMatch: 'full',
+    path: 'home', component: ClientLayoutComponent, pathMatch: 'prefix',
     children: [
       { path: '', component: PostListComponent },
       { path: 'post', component: PostPageComponent },
@@ -27,7 +28,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes), RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
