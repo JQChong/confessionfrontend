@@ -1,7 +1,7 @@
 export class Post{
-    id!: number;
-    text!: string;
-    likes!: number;
-    time_created!: Date;
+    id!: number; // to be loaded
+    text!: string; // to be loaded
+    likes!: number; // to be loaded
+    time_created!: Date; // to be loaded
     approved!: boolean;
 }

@@ -13,6 +13,8 @@ export class PostPageComponent implements OnInit {
    * id and comment id.
    * 
    * However, the page should also include a simple form for users to type in comments as well.
+   * 
+   * Users should be able to navigate between the posts as well, i.e. to the previous or next post.
    */
 
   constructor() { }
