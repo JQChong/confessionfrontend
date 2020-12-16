@@ -1,6 +1,14 @@
+<div class="sticky">
+    <mat-toolbar color="primary" class="sticky">
+        <mat-toolbar-row>
+            <span>MSL Confession Administrative Page</span>
+            <span class="fill-remaining-space"></span>
+        </mat-toolbar-row>
+    </mat-toolbar>
+</div>
+
 <mat-card class="mat-elevation-z8">
     <h2>Administrator Login</h2>
-
     <form [formGroup]="loginForm">
         <mat-form-field appearance="outline" class="full-width">
             <mat-label>Username</mat-label>
@@ -21,4 +29,6 @@
             (click)="onSubmit()">Login</button>
 
     </form>
+    <br>
+    <p style="color: red;">{{errorString}}</p>
 </mat-card>
