@@ -5,7 +5,6 @@ import { User } from './user';
 import { Router } from '@angular/router';
 import { Token } from './token';
 import { catchError, map } from 'rxjs/operators';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ComponentBridgingService } from '../componentbridging.service';
 
 @Injectable({
@@ -21,7 +20,6 @@ export class LoginService {
     constructor(
         private httpClient: HttpClient,
         private router: Router,
-        private snackbar: MatSnackBar,
         private bridgingService: ComponentBridgingService
     ) {
         this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
@@ -35,7 +33,7 @@ export class LoginService {
                     this.storeUser({ username, token });
                     return true;
                 }),
-                catchError((error) => this.handleError(error)(this.snackbar))
+                catchError((error) => this.handleError(error))
             );
     }
 
@@ -64,7 +62,7 @@ export class LoginService {
                     this.updateAccessToken(receivedToken);
                     return true;
                 }),
-                catchError((error) => this.handleError(error)(this.snackbar))
+                catchError((error) => this.handleError(error))
             );
     }
 
@@ -87,14 +85,7 @@ export class LoginService {
         this.currentUserSubject.next(user);
     }
 
-    // I need to curry functions as handleError will be passed into a method as an anonymous class,
-    // which causes this.snackbar to return undefined (as 'this' is referring to the anonymous
-    // class, not the original class).
     private handleError(error: HttpErrorResponse) {
-        return (snackbar: MatSnackBar) => this.handleErrorHelper(error, snackbar);
-    }
-
-    private handleErrorHelper(error: HttpErrorResponse, snackbar: MatSnackBar) {
         if (error.error instanceof ErrorEvent) {
             console.error(error.error.message);
             this.bridgingService.publish('error');
