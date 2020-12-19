@@ -88,16 +88,16 @@ export class AdminPageComponent implements OnInit {
     console.log('Type', type, 'State', state, 'Id', id);
     if (type === 'Post') {
       if (state) {
-        this.postService.approvePost(id);
+        this.postService.approvePost(id).subscribe();
       } else {
-        this.postService.deletePost(id);
+        this.postService.deletePost(id).subscribe();
       }
       this.posts.data = this.posts.data.filter(comment=>comment.id!==id)
     } else if (type === 'Comment') {
       if (state) {
-        this.commentService.approveComment(id);
+        this.commentService.approveComment(id).subscribe();
       } else {
-        this.commentService.deleteComment(id);
+        this.commentService.deleteComment(id).subscribe();
       }
       this.comments.data = this.comments.data.filter(comment=>comment.id!==id)
     } else {

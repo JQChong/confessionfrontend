@@ -20,6 +20,7 @@ export class BaseService {
     }
 
     approveObject(url: string, id: Number): Observable<any> {
+        console.log(url, id,"BASE SERVICE")
         return this.httpClient.patch(`${url}/${id}`, { approved: true } );
     }
 
