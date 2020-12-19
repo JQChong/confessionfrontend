@@ -20,12 +20,11 @@ export class BaseService {
     }
 
     approveObject(url: string, id: Number): Observable<any> {
-        console.log("CALLED")
-        return this.httpClient.patch(`${url}/${id}`, { params: { approved: true } });
+        return this.httpClient.patch(`${url}/${id}`, { approved: true } );
     }
 
     updateLikes(url: string, id: number, likes: number): Observable<any> {
-        return this.httpClient.patch(`${url}/${id}`, { params: { likes } });
+        return this.httpClient.patch(`${url}/${id}`, { likes });
     }
 
     deleteObject(url: string, id: Number): Observable<any> {
