@@ -1,0 +1,25 @@
+.navigation {
+    display: flex; 
+    justify-content: space-between; 
+    padding: 20px;
+}
+
+.main {
+    width: 75%; 
+    padding:20px;
+}
+
+.content {
+    margin: auto; 
+    width: 80%;
+}
+
+.post {
+    padding: 10px;
+}
+
+.new-comment {
+    background-color: lightgrey;
+    padding: 10px;
+    width: 100%;
+}

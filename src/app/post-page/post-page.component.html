@@ -1,1 +1,42 @@
-<p>post-page works!</p>
+<div class="main">
+    <div class="navigation">
+        <button mat-button (click)="goPrevious()">
+            <mat-icon>navigate_before</mat-icon>Previous
+        </button>
+        <button mat-button (click)="goNext()">
+            Next<mat-icon>navigate_next</mat-icon>
+        </button>
+    </div>
+    <div class="content">
+        <div class="post"> 
+            {{post.id}}
+            <br/>
+            {{post.time_created}}
+            <br/>
+            {{post.text}}
+            <br/>
+            {{post.likes}}
+            <br/>
+            <button mat-button (click)="updatePostLikes()">Like</button>
+        </div>
+        <div class="comments">
+            <mat-form-field class="new-comment">
+                <textarea #comment matInput placeholder="Write a comment..."></textarea>
+                <button mat-button type="submit" (click)="createNewComment(comment.value)">Comment</button>
+            </mat-form-field>
+            <div class="old-comments">
+                <div *ngFor="let comment of comments">
+                    {{comment.poster}}
+                    <br>
+                    {{comment.text}}
+                    <br>
+                    {{comment.time_created}}
+                    <br>
+                    {{comment.likes}}
+                    <br/>
+                    <button mat-button (click)="updateCommentLikes(comment)">Like</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
