@@ -47,6 +47,6 @@ export class ClientLayoutComponent implements OnInit {
   }
 
   onClick(category: string) {
-    this.router.navigate(['home/post'], { queryParams: { category } });
+    this.router.navigate(['home'], { queryParams: { category } });
   }
 }
