@@ -9,9 +9,7 @@ export class BaseService {
 
     constructor(private httpClient: HttpClient) { }
 
-    getObjectByStatus(url: string, status: boolean): Observable<any> {
-        const actualStatus = status ? 'True' : 'False';
-        let params = new HttpParams().set('approved', actualStatus);
+    getObjectByParams(url: string, params: any): Observable<any> {
         return this.httpClient.get(`${url}`, { params });
     }
 
@@ -20,7 +18,7 @@ export class BaseService {
     }
 
     approveObject(url: string, id: Number): Observable<any> {
-        return this.httpClient.patch(`${url}/${id}`, { approved: true } );
+        return this.httpClient.patch(`${url}/${id}`, { approved: true });
     }
 
     updateLikes(url: string, id: number, likes: number): Observable<any> {
