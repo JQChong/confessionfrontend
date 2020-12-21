@@ -12,6 +12,13 @@
       <br>
       <a mat-button style="width: 100%; text-align: left;">Popular</a>
     </mat-nav-list>
+    <hr style="width: 90%;">
+    <div>
+      <p style="padding: 5% 0 0 10%; font-size: 12px;">CATEGORIES</p>
+      <mat-nav-list *ngFor="let category of categories">
+        <a mat-button (click)="onClick($event.target.outerText)">{{category.name}}</a>
+      </mat-nav-list>
+    </div>
     <br>
     <div style="position: absolute; bottom:1%">
       <a mat-button href="https://www.facebook.com/nus.msl.ufo" target="_blank">

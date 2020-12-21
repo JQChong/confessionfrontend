@@ -16,6 +16,10 @@ export class PostListComponent implements OnInit {
    * When a card is clicked, the user is redirected to the page with the post and the comments. This can be
    * done using the navigate method in Router class. During navigation, post id should also be passed as query
    * parameters so that relevant comments can be loaded at the page.
+   * 
+   * addendum: users should also be able to filter the posts by category. for this, users will be clicking
+   * on the categories on the side panel. then user will be redirected, together with the category as one of
+   * the query parameters.
   */
 
   constructor() { }
