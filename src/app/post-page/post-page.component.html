@@ -22,8 +22,8 @@
         <div class="comments">
             <mat-form-field class="new-comment">
                 <textarea #comment matInput placeholder="Write a comment..."></textarea>
-                <button mat-button type="submit" (click)="createNewComment(comment.value)">Comment</button>
             </mat-form-field>
+            <button mat-button type="submit" (click)="createNewComment(comment.value)">Comment</button>
             <div class="old-comments">
                 <div *ngFor="let comment of comments">
                     {{comment.poster}}
