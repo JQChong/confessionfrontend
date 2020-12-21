@@ -16,11 +16,20 @@ export class CommentService {
 
   // note that only approved posts will be shown.
   getCommentsByPost(post_id: number, page: number = 1): Observable<any> {
-    return this.baseService.getObjectByParams(this.baseUrlComments, { page, post_id, approved: true });
+    return this.baseService.getObjectByParams(this.baseUrlComments, { page, post_id, approved: 'True' });
   }
 
-  getCommentsByStatus(status: boolean, page: number = 1): Observable<any> {
+  getCommentsByStatus(status: string = 'True', page: number = 1): Observable<any> {
     return this.baseService.getObjectByParams(this.baseUrlComments, { page, approved: status });
+  }
+
+  sortCommentsWithinPost(order_by: string, post_id: number, page: number = 1): Observable<any> {
+    return this.baseService.getObjectByParams(this.baseUrlComments, { order_by, post_id, page, approved: 'True' });
+  }
+
+  // i would presume this to be only used for admin page
+  sortComments(order_by: string, page: number = 1, status: string = 'False'): Observable<any> {
+    return this.baseService.getObjectByParams(this.baseUrlComments, { order_by, page, approved: status });
   }
 
   createComment(comment: object): Observable<object> {

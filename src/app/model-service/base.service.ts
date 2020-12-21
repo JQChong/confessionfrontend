@@ -9,7 +9,7 @@ export class BaseService {
 
     constructor(private httpClient: HttpClient) { }
 
-    getObjectByParams(url: string, params: any): Observable<any> {
+    getObjectByParams(url: string, params): Observable<any> {
         return this.httpClient.get(`${url}`, { params });
     }
 

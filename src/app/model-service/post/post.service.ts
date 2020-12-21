@@ -20,8 +20,21 @@ export class PostService {
     return this.httpClient.get(`${this.baseUrlPosts}/${id}`);
   }
 
-  getPostByStatus(status: boolean, page: number = 1): Observable<any> {
+  // i put in this default value so that u guys dun have to keep typing true lol
+  getPostByStatus(status: string = 'True', page: number = 1): Observable<any> {
     return this.baseService.getObjectByParams(this.baseUrlPosts, { page, approved: status });
+  }
+
+  sortPosts(order_by: string, status: string = 'True', page: number = 1): Observable<any> {
+    return this.baseService.getObjectByParams(this.baseUrlPosts, { order_by, page, approved: status });
+  }
+
+  filterByCategory(category: string, order_by?: string, page: number = 1): Observable<any> {
+    let params = { category, page };
+    if (order_by) {
+      params = Object.assign(params, { order_by });
+    }
+    return this.baseService.getObjectByParams(this.baseUrlPosts, params);
   }
 
   createPost(post: object): Observable<object> {
