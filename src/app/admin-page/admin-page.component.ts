@@ -37,11 +37,11 @@ export class AdminPageComponent implements OnInit {
   }
 
   reloadData() {
-    this.postService.getPostByStatus(false).subscribe((data: Post[]) => {
+    this.postService.getPostByStatus('False').subscribe((data: Post[]) => {
       console.log(data)
       this.posts.data = data.results
     })
-    this.commentService.getCommentsByStatus(false).subscribe((data: Comment[]) => {
+    this.commentService.getCommentsByStatus('False').subscribe((data: Comment[]) => {
       this.comments.data = data.results
     })
 
