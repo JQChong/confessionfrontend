@@ -1,12 +1,83 @@
 <div class="sticky">
-    <mat-toolbar color="primary" class="sticky">
-        <mat-toolbar-row>
-            <span>MSL Confession Administrative Page</span>
-            <span class="fill-remaining-space"></span>
-
-            <app-logout></app-logout>
-        </mat-toolbar-row>
-    </mat-toolbar>
+  <mat-toolbar color="primary" class="sticky">
+    <mat-toolbar-row>
+      <span>MSL Confession Administrative Page</span>
+      <span class="fill-remaining-space"></span>
+      <app-logout></app-logout>
+    </mat-toolbar-row>
+  </mat-toolbar>
 </div>
 
-<p>admin-page works!</p>
+<section class='table'>
+  <h1 class='header'>Posts</h1>
+  <mat-table [dataSource]="posts" class="mat-elevation-z8">
+    <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
+        <mat-cell *matCellDef="let cell">{{ cell.id }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="text">
+        <mat-header-cell *matHeaderCellDef>Post</mat-header-cell>
+        <mat-cell *matCellDef="let cell">{{ cell.text }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="time_created">
+        <mat-header-cell *matHeaderCellDef>Time Created</mat-header-cell>
+        <mat-cell *matCellDef="let cell">{{ cell.time_created }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="approved">
+        <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
+        <mat-cell *matCellDef="let cell">
+          <button mat-button color="primary" (click)="updateState('Post',true, cell.id)">
+            Approve
+          </button>
+          <button
+          mat-button
+            color="secondary"
+            (click)="updateState('Post',false, cell.id)"
+          >
+            Reject
+          </button>
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="postTableColumns"></mat-header-row>
+      <mat-row *matRowDef="let cell; columns: postTableColumns"></mat-row>
+    </mat-table>
+</section>
+
+<section class='table'>
+  <h1 class='header'>Comments</h1>
+  <mat-table [dataSource]="comments" class="mat-elevation-z8">
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
+      <mat-cell *matCellDef="let cell">{{ cell.id }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="post">
+      <mat-header-cell *matHeaderCellDef>Post</mat-header-cell>
+      <mat-cell *matCellDef="let cell">{{ cell.post.text }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="text">
+      <mat-header-cell *matHeaderCellDef>Comment</mat-header-cell>
+      <mat-cell *matCellDef="let cell">{{ cell.text }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="time_created">
+      <mat-header-cell *matHeaderCellDef>Time Created</mat-header-cell>
+      <mat-cell *matCellDef="let cell">{{ cell.time_created }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="approved">
+      <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
+      <mat-cell *matCellDef="let cell">
+        <button mat-button color="primary" (click)="updateState('Comment',true, cell.id)">
+          Approve
+        </button>
+        <button
+          mat-button
+          color="secondary"
+          (click)="updateState('Comment',false, cell.id)"
+        >
+          Reject
+        </button>
+      </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="commentTableColumns"></mat-header-row>
+    <mat-row *matRowDef="let cell; columns: commentTableColumns"></mat-row>
+  </mat-table>
+</section>
