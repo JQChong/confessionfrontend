@@ -17,7 +17,7 @@ export class CommentService {
   private baseUrlComments = 'http://localhost:8000/api/comments';
 
   getCommentsByPost(id: number): Observable<any> {
-    return this.httpClient.get(`${this.baseUrlComments}/post/${id}`);
+    return this.httpClient.get(`${this.baseUrlComments}`, { params: { post_id: id + '' } });
   }
 
   getCommentsByStatus(status: boolean): Observable<any> {
