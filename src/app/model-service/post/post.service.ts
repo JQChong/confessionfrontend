@@ -16,16 +16,12 @@ export class PostService {
   // when url is confirmed, this needs to be moved to environment
   private baseUrlPosts = 'http://localhost:8000/api/posts';
 
-  getPostList(): Observable<any> {
-    return this.httpClient.get(`${this.baseUrlPosts}`);
-  }
-
   getPostById(id: Number): Observable<any> {
     return this.httpClient.get(`${this.baseUrlPosts}/${id}`);
   }
 
-  getPostByStatus(status: boolean): Observable<any> {
-    return this.baseService.getObjectByStatus(this.baseUrlPosts, status);
+  getPostByStatus(status: boolean, page: number = 1): Observable<any> {
+    return this.baseService.getObjectByParams(this.baseUrlPosts, { page, approved: status });
   }
 
   createPost(post: object): Observable<object> {
