@@ -16,7 +16,7 @@
     <div>
       <p style="padding: 5% 0 0 10%; font-size: 12px;">CATEGORIES</p>
       <mat-nav-list *ngFor="let category of categories">
-        <a mat-button (click)="onClick($event.target.outerText)">{{category.name}}</a>
+        <a mat-button (click)="onClick(category.name)">{{category.name}}</a>
       </mat-nav-list>
     </div>
     <br>

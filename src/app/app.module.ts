@@ -29,6 +29,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { ComponentBridgingService } from './model-service/componentbridging.service';
 import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
 import { ClientLayoutComponent } from './client-layout/client-layout.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { ClientLayoutComponent } from './client-layout/client-layout.component';
     PostPageComponent,
     AdminPageComponent,
     AdminLayoutComponent,
-    ClientLayoutComponent
+    ClientLayoutComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,

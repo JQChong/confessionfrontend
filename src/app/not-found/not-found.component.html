@@ -1,0 +1,38 @@
+<style>
+    .center {
+        text-align: center;
+    }
+
+    .grid-container {
+        display: inline-grid;
+        grid-template-columns: auto auto;
+    }
+
+    .container {
+        display: table;
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    .text-container{
+        padding-top: 2%;
+        margin-right: 10%;
+        width: 100%;
+        font-size: 20px;
+        text-align: right;
+    }
+</style>
+<div class="container">
+    <h1 style="padding-top: 35%; padding-bottom: 3%; font-size:72px" class="center">Har... 404 ah...</h1>
+    <p style="padding-top: 5%; font-size:24px" class="center">How did you get to this page one? Haiyaaaa...</p>
+
+    <!--Two buttons to redirect user to either the form or the posts-->
+    <div class="grid-container" style="padding-top: 10%;">
+        <p class="text-container">If you want to post something, go here:</p>
+        <a mat-button routerLink="/home/edit" routerLinkActive="active">Post Confession</a>
+
+        <p class="text-container">If you want to read other people's post, go here:</p>
+        <a mat-button routerLink="/home" routerLinkActive="active">Home</a>
+    </div>
+    <p style="padding-top: 10%; font-size: 20px" class="center">Next time, don't come to this page liao, ok?</p>
+</div>
