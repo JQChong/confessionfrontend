@@ -35,9 +35,8 @@ export class PostListComponent implements OnInit {
     this.cards = [];
     this.postService.getPostByStatus('True', 1).subscribe(
       data => {
-        const posts = data.json().message;
-        console.log(posts); // TODO comment out for production
-        for (let post of posts) {
+        console.log(data); // TODO comment out for production
+        for (let post of data.results) {
           this.cards.push({
             id: post.id,
             preview: this.getPreview(post.text),
