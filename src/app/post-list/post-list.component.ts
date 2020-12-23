@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { PostService } from '../model-service/post/post.service';
 
 @Component({
   selector: 'app-post-list',
@@ -22,9 +23,37 @@ export class PostListComponent implements OnInit {
    * the query parameters.
   */
 
-  constructor() { }
+  public cards = [];
+
+  constructor(private postService: PostService) { }
 
   ngOnInit(): void {
+    this.populateCards();
+  }
+
+  populateCards() {
+    this.cards = [];
+    this.postService.getPostByStatus('True', 1).subscribe(
+      data => {
+        const posts = data.json().message;
+        console.log(posts); // TODO comment out for production
+        for (let post of posts) {
+          this.cards.push({
+            id: post.id,
+            preview: this.getPreview(post.text),
+            likes: post.likes,
+            time_created: post.time_created
+          });
+        }
+      },
+      error => {
+        console.log("error in populating cards with posts");
+      }
+    );
+  }
+
+  getPreview(text: string): string {
+    return text.slice(0, 100) + "...";
   }
 
 }

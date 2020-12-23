@@ -1,1 +1,16 @@
-<p>post-list works!!!</p>
+<mat-list>
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>#666</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>dummy card</mat-card-content>
+    </mat-card>
+    <mat-card *ngFor="let card of cards">
+        <mat-card-header>
+            <mat-card-title>#{{ card.id }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <p>{{ card.preview }}</p>
+        </mat-card-content>
+    </mat-card>
+</mat-list>
