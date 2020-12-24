@@ -18,9 +18,9 @@
         </p>
     </mat-card-content>
     <div>
-        <form [formGroup]="confessionForm" (ngSubmit)="submitConfession(confessionForm.value)">
+        <form [formGroup]="confessionForm" (ngSubmit)="onSubmit()">
             <mat-form-field style="width:90%; max-width:750px;">
-                <textarea rows="6" matInput placeholder="Your Confession"></textarea>
+                <textarea rows="6" matInput formControlName="text" placeholder="Your Confession"></textarea>
             </mat-form-field>
             <p>
                 <button mat-button type="submit">Submit</button>
