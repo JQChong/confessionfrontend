@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Post } from '../model-service/post/post';
 import { PostService } from '../model-service/post/post.service';
 
@@ -18,7 +19,8 @@ export class PostEditComponent implements OnInit {
   confessionForm: FormGroup;
 
   constructor(
-    private postService: PostService
+    private postService: PostService,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -27,24 +29,42 @@ export class PostEditComponent implements OnInit {
     });
   }
 
-  // TODO
-  // consider changing return type if necessary
   onSubmit(): void {
-    console.log("onSubmit()");
     const text = this.confessionForm.controls['text'].value;
     if (text == "") {
       return;
     }
-    console.log("post text not empty");
+    const post = this.getPost(text);
+    this.postService.createPost(post).subscribe();
+    this.confessionForm.reset();
+    this.openSnackBar();
+  }
+
+  getPost(text: string): Post {
     const post = new Post();
-    post.id = 999;  // TODO get largest post id in database
+    // post.id automatically increment by somewhere (idk where), will overwrite value here
     post.text = text;
     post.likes = 0;
     post.time_created = new Date();
-    post.approved = true; // TODO change to false after debug
-    this.postService.createPost(post).subscribe();
-    // TODO submit confession
-    // TODO snackbar inform submitted, clear form
+    post.approved = true; // TODO change to false after confirm this works
+    return post;
+  }
+
+  openSnackBar(): void {
+    this.snackBar.openFromComponent(SubmittedComponent, {
+      duration: 5000,
+    });
   }
 
 }
+
+@Component({
+  selector: 'submitted-snack',
+  templateUrl: 'submitted-snack.html',
+  styles: [`
+    .submitted {
+      color: white;
+    }
+  `],
+})
+export class SubmittedComponent { }

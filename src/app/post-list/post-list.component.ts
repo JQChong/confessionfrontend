@@ -52,7 +52,11 @@ export class PostListComponent implements OnInit {
   }
 
   getPreview(text: string): string {
-    return text.slice(0, 100) + "...";
+    if (text.length < 100) {
+      return text;
+    } else {
+      return text.slice(0, 100) + " ...";
+    }
   }
 
 }
