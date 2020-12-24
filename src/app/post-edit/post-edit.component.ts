@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-post-edit',
@@ -12,9 +13,17 @@ export class PostEditComponent implements OnInit {
    * captcha in the form
    */
 
+  confessionForm: FormGroup;
+
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  // TODO
+  // consider changing return type if necessary
+  submitConfession(value: any): void {
+
   }
 
 }
