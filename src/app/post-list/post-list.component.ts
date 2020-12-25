@@ -1,5 +1,7 @@
 import { formatDate } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { PostService } from '../model-service/post/post.service';
 
 @Component({
@@ -24,17 +26,24 @@ export class PostListComponent implements OnInit {
    * the query parameters.
   */
 
-  public cards = [];
+  cards = [];
+  currentPage = 1;
 
-  constructor(private postService: PostService) { }
+
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+
+  constructor(
+    private postService: PostService,
+    private snackBar: MatSnackBar
+  ) { }
 
   ngOnInit(): void {
     this.populateCards();
   }
 
-  populateCards() {
+  populateCards(): void {
     this.cards = [];
-    this.postService.getPostByStatus('True', 1).subscribe(
+    this.postService.getPostByStatus('True', this.currentPage).subscribe(
       data => {
         console.log(data); // TODO comment out for production
         for (let post of data.results) {
@@ -47,7 +56,12 @@ export class PostListComponent implements OnInit {
         }
       },
       error => {
-        console.log("error in populating cards with posts");
+        console.log("page out of range, revert to previous page");
+        this.currentPage -= 1;
+        this.populateCards();
+        this.snackBar.openFromComponent(LastPageComponent, {
+          duration: 5000,
+        });
       }
     );
   }
@@ -67,4 +81,55 @@ export class PostListComponent implements OnInit {
     return formatDate(date, format, locale);
   }
 
+  isFirstPage(): boolean {
+    return this.currentPage == 1;
+  }
+
+  isLastPage(): boolean {
+    /** 
+     * TODO need a method to check whether is last page efficiently
+     * for example query total number of posts and max number of posts per page
+     * then can calculate whether is last page
+     */
+    // THE FOLLOWING CAUSES INIFINITE LOOP SMH
+    // const posts = this.postService.getPostByStatus('True', this.currentPage + 1);
+    // let result = false;
+    // posts.subscribe(
+    //   data => { },
+    //   error => {
+    //     if (error['status'] == 404) {
+    //       // next page not available, means already last page
+    //       result = true;
+    //     } else {
+    //       console.log("unexpected error in isLastPage():", error);
+    //     }
+    //   }
+    // );
+    // return result;
+    return false;
+  }
+
+  onPreviousClick(): void {
+    if (this.currentPage > 1) {
+      this.currentPage -= 1;
+      this.populateCards();
+    }
+  }
+
+  onNextClick(): void {
+    this.currentPage += 1;
+    this.populateCards();
+  }
+
 }
+
+@Component({
+  selector: 'last-page-snack',
+  templateUrl: 'last-page-snack.html',
+  styles: [`
+  .submitted {
+    color: white;
+  }
+`],
+})
+export class LastPageComponent { }

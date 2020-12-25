@@ -30,6 +30,7 @@ import { ComponentBridgingService } from './model-service/componentbridging.serv
 import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
 import { ClientLayoutComponent } from './client-layout/client-layout.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
   declarations: [
@@ -63,6 +64,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
     MatSnackBarModule,
     FlexLayoutModule,
     MatTableModule,
+    MatPaginatorModule,
   ],
   providers: [
     ComponentBridgingService
