@@ -23,7 +23,7 @@
                 <textarea rows="6" matInput formControlName="text" placeholder="Your Confession"></textarea>
             </mat-form-field>
             <p>
-                <button mat-button type="submit">Submit</button>
+                <button mat-button [disabled]="isPostValid()" type="submit">Submit</button>
             </p>
         </form>
     </div>

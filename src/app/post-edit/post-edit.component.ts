@@ -29,6 +29,11 @@ export class PostEditComponent implements OnInit {
     });
   }
 
+  isPostValid(): boolean {
+    const text = this.confessionForm.controls['text'].value;
+    return text.trim() == "";
+  }
+
   onSubmit(): void {
     const text = this.confessionForm.controls['text'].value;
     if (text == "") {
