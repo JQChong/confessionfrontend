@@ -1,3 +1,4 @@
+import { formatDate } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { PostService } from '../model-service/post/post.service';
 
@@ -41,7 +42,7 @@ export class PostListComponent implements OnInit {
             id: post.id,
             preview: this.getPreview(post.text),
             likes: post.likes,
-            time_created: post.time_created
+            date: this.getDisplayDate(post.time_created)
           });
         }
       },
@@ -52,11 +53,18 @@ export class PostListComponent implements OnInit {
   }
 
   getPreview(text: string): string {
-    if (text.length < 100) {
+    const maxPreviewLength = 100;
+    if (text.length < maxPreviewLength) {
       return text;
     } else {
-      return text.slice(0, 100) + " ...";
+      return text.slice(0, maxPreviewLength) + " ...";
     }
+  }
+
+  getDisplayDate(date: Date): string {
+    const format = 'dd/MM/yyyy';
+    const locale = 'en-US';
+    return formatDate(date, format, locale);
   }
 
 }
