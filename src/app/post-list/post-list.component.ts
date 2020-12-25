@@ -60,7 +60,7 @@ export class PostListComponent implements OnInit {
         this.currentPage -= 1;
         this.populateCards();
         this.snackBar.openFromComponent(LastPageComponent, {
-          duration: 5000,
+          duration: 4000,
         });
       }
     );

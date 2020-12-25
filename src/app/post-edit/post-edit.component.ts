@@ -52,7 +52,7 @@ export class PostEditComponent implements OnInit {
 
   openSnackBar(): void {
     this.snackBar.openFromComponent(SubmittedComponent, {
-      duration: 5000,
+      duration: 4000,
     });
   }
 
