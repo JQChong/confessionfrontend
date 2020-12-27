@@ -18,7 +18,7 @@ export class BaseService {
     }
 
     approveObject(url: string, id: Number): Observable<any> {
-        return this.httpClient.patch(`${url}/${id}`, { approved: true });
+        return this.httpClient.patch(`${url}/${id}`, { approved: true, time_created: new Date() });
     }
 
     updateLikes(url: string, id: number, likes: number): Observable<any> {
