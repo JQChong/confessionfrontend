@@ -51,13 +51,12 @@ export class PostEditComponent implements OnInit {
     post.text = text;
     post.likes = 0;
     post.time_created = new Date();
-    post.approved = true; // TODO change to false after confirm this works
+    post.approved = false;
     return post;
   }
 
   openSnackBar(): void {
     this.snackBar.openFromComponent(SubmittedComponent, {
-      duration: 4000,
     });
   }
 

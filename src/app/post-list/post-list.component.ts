@@ -2,6 +2,7 @@ import { formatDate } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { PostService } from '../model-service/post/post.service';
 
 @Component({
@@ -34,7 +35,8 @@ export class PostListComponent implements OnInit {
 
   constructor(
     private postService: PostService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -60,7 +62,7 @@ export class PostListComponent implements OnInit {
         this.currentPage -= 1;
         this.populateCards();
         this.snackBar.openFromComponent(LastPageComponent, {
-          duration: 4000,
+          duration: 2000,
         });
       }
     );
@@ -79,6 +81,10 @@ export class PostListComponent implements OnInit {
     const format = 'dd/MM/yyyy';
     const locale = 'en-US';
     return formatDate(date, format, locale);
+  }
+
+  routeToPost(id: number): void {
+    this.router.navigate(["/home/post"], { queryParams: { id } });
   }
 
   isFirstPage(): boolean {

@@ -1,11 +1,11 @@
 <div style="width: 95%; max-width: 750px;">
     <mat-list>
         <mat-card *ngFor="let card of cards">
-            <mat-card-header>
+            <mat-card-header [routerLink]="['/home/post']" [queryParams]="{id: card.id}">
                 <mat-card-title><strong>#{{ card.id }}</strong></mat-card-title>
             </mat-card-header>
             <mat-card-content>
-                <p>{{ card.preview }}</p>
+                <div>{{ card.preview }}</div>
                 <div class="same-line">
                     <span class="date">{{ card.date }}</span>
                     <div class="same-line reaction-summary">
