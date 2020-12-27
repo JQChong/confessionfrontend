@@ -7,36 +7,105 @@
             Next<mat-icon>navigate_next</mat-icon>
         </button>
     </div>
-    <div class="content">
-        <div class="post"> 
-            {{post.id}}
-            <br/>
-            {{post.time_created}}
-            <br/>
+    <mat-card class="content">
+        <mat-card-header>
+            <mat-card-title>{{'#' + post.id}}</mat-card-title>
+            <mat-card-subtitle>{{post.time_created | date:'dd LLLL yyyy, h:mm a'}}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content style="padding:0px 40px;">
             {{post.text}}
-            <br/>
-            {{post.likes}}
-            <br/>
-            <button mat-button (click)="updatePostLikes()">Like</button>
-        </div>
-        <div class="comments">
-            <mat-form-field class="new-comment">
-                <textarea #comment matInput placeholder="Write a comment..."></textarea>
-            </mat-form-field>
-            <button mat-button type="submit" (click)="createNewComment(comment.value)">Comment</button>
-            <div class="old-comments">
-                <div *ngFor="let comment of comments">
-                    {{comment.poster}}
+        </mat-card-content>
+        <mat-card-header>
+            <mat-card-subtitle>
+                {{post.likes === 1 ? post.likes + " Like" : post.likes + " Likes"}}
+                &middot;
+                {{comments.length === 1 ? comments.length + " Comment" : comments.length + " Comments"}}
+            </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-actions style="padding:10px 25px;">
+            <button mat-raised-button color="primary" (click)="updatePostLikes()">LIKE</button>
+            <button mat-raised-button color="primary" (click)="text.focus()">COMMENT</button>
+        </mat-card-actions>
+        <mat-card-content>
+            <div>
+                <form [formGroup]="commentForm" class="comment">
+                    <mat-form-field floatLabel="never" style="padding:5px; width:98%;">
+                        <mat-label>Write a comment...</mat-label>
+                        <textarea matInput #text formControlName="text"></textarea>
+                        <mat-error *ngIf="commentForm.get('text').errors?.required">This field is required</mat-error>
+                    </mat-form-field>
+                    <div>
+                        <span>
+                            <input type="radio" style="padding:0px 25px;" value="Anonymous" formControlName="poster">
+                            Comment anonymously
+                        </span>
+                        <br>
+                        <span>
+                            <span>
+                                <input type="radio" value="name.value" formControlName="poster" #reveal>
+                                Reveal yourself as
+                            </span>
+                                <mat-form-field floatLabel="never">
+                                    <mat-label>your name or nickname</mat-label>
+                                    <input type="text" matInput #name formControlName="name">
+                                    <mat-error *ngIf="commentForm.get('name').errors?.required">This field is required</mat-error>
+                                </mat-form-field>
+                        </span>
+                        <br>
+                        <span style="display:flex; justify-content:flex-end;">
+                            <button mat-raised-button type="submit" (click)="createNewComment(text.value, name.value)" [disabled]="commentForm.get('text').errors?.required || commentForm.get('poster').errors?.required || commentForm.get('name').errors?.required" style="height:35px;">
+                                Submit
+                            </button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+            <div class="comment" *ngFor="let comment of comments">
+                <div>
+                    <b>{{comment.poster}}</b>
                     <br>
                     {{comment.text}}
                     <br>
-                    {{comment.time_created}}
-                    <br>
-                    {{comment.likes}}
-                    <br/>
-                    <button mat-button (click)="updateCommentLikes(comment)">Like</button>
+                    <span style="display:flex; justify-content:space-between">
+                        <span style="color:	#808080;">
+                            {{comment.likes === 1 ? comment.likes + ' Like' : comment.likes + ' Likes'}}
+                            &middot;
+                            {{comment.time_created | date:'short'}}
+                        </span>
+                        <a style="cursor:pointer;" onclick="updateCommentLikes(comment)">Like</a>
+                    </span>
                 </div>
             </div>
-        </div>
-    </div>
+        </mat-card-content>
+    </mat-card>
 </div>
+
+<!-- // Not working
+<div>
+    <span (click)="checkAnonymous()" style="cursor:default;">
+        <input type="radio" style="padding:0px 25px;" value="Anonymous" formControlName="poster" #anonymous [checked]="isAnonymous">
+        Comment anonymously
+    </span>
+    <br>
+    <span>
+        <span (click)="checkReveal()" style="cursor:default;">
+            <input type="radio" value="name.value" formControlName="poster" #reveal [checked]="isReveal">
+            Reveal yourself as
+        </span>
+            <mat-form-field floatLabel="never">
+                <mat-label>your name or nickname</mat-label>
+                <input type="text" matInput #name formControlName="name" (click)="checkRevealAlt()">
+                <mat-error *ngIf="commentForm.get('name').errors?.required">This field is required</mat-error>
+            </mat-form-field>
+    </span>
+    <br>
+    <span style="display:flex; justify-content:flex-end;">
+        <button mat-raised-button type="submit" (click)="createNewComment(text.value, name.value)" [disabled]="commentForm.get('text').errors?.required || commentForm.get('poster').errors?.required || commentForm.get('name').errors?.required" style="height:35px;">
+            Submit
+        </button>
+    </span>
+    <br>
+    text: {{commentForm.get('text').errors?.required}}
+    poster: {{commentForm.get('poster').errors?.required}}
+    name: {{commentForm.get('name').errors?.required}}
+</div> -->
