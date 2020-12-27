@@ -35,7 +35,7 @@
                         <mat-error *ngIf="commentForm.get('text').errors?.required">This field is required</mat-error>
                     </mat-form-field>
                     <div>
-                        <span>
+                        <!-- <span>
                             <input type="radio" style="padding:0px 25px;" value="Anonymous" formControlName="poster">
                             Comment anonymously
                         </span>
@@ -51,9 +51,23 @@
                                     <mat-error *ngIf="commentForm.get('name').errors?.required">This field is required</mat-error>
                                 </mat-form-field>
                         </span>
-                        <br>
+                        <br> -->
+                        <mat-radio-group formControlName="poster">
+                            <mat-radio-button value="Anonymous">
+                                Comment anonymously
+                            </mat-radio-button>
+                            <br>
+                            <mat-radio-button value="name.value" #reveal>
+                                Reveal yourself as
+                                <mat-form-field floatLabel="never">
+                                    <mat-label>your name or nickname</mat-label>
+                                    <input type="text" matInput #name formControlName="name">
+                                    <mat-error *ngIf="commentForm.get('name').errors?.required">This field is required</mat-error>
+                                </mat-form-field>
+                            </mat-radio-button>
+                        </mat-radio-group>
                         <span style="display:flex; justify-content:flex-end;">
-                            <button mat-raised-button type="submit" (click)="createNewComment(text.value, name.value)" [disabled]="commentForm.get('text').errors?.required || commentForm.get('poster').errors?.required || commentForm.get('name').errors?.required" style="height:35px;">
+                            <button mat-raised-button type="submit" (click)="createNewComment(text.value, name.value)" [disabled]="!commentForm.valid" style="height:35px;">
                                 Submit
                             </button>
                         </span>
