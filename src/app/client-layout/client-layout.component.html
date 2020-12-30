@@ -41,7 +41,7 @@
           </button>
           <mat-form-field style="width: 350%; margin-left:5%" floatLabel="always">
             <mat-label></mat-label>
-            <input matInput placeholder="Search...">
+            <input #searchTerm matInput placeholder="Search..." (keyup.enter)="searchOnEnter(searchTerm.value)">
           </mat-form-field>
         </span>
         <span class="fill-remaining-space"></span>
