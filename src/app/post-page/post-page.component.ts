@@ -1,11 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { PostService } from '../model-service/post/post.service';
 import { CommentService } from '../model-service/comment/comment.service';
-import { Comment } from '../model-service/comment/comment'
+import { SubmitCommentComponent } from './submit-comment/submit-comment.component';
+import { Post } from '../model-service/post/post';
+import { Comment } from '../model-service/comment/comment';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { map, switchMap } from 'rxjs/operators';
-import { zip } from 'rxjs';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { map, switchMap, startWith } from 'rxjs/operators';
+import { Observable, zip } from 'rxjs';
+import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
+import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
+
 
 @Component({
   selector: 'app-post-page',
@@ -27,13 +32,14 @@ export class PostPageComponent implements OnInit {
    * very not nice if i press previous post and then i get sent to 404 page haha
    */
 
-  post: any; // izit any?
-  approvedPosts: any;
-  numberOfApprovedPosts: number;
-  comments: Comment[]; // izit any?
+  post: Post; // izit any?
+  comments: Comment[];
   commentForm: FormGroup;
-  // isAnonymous: Boolean;
-  // isReveal: Boolean;
+  numberOfApprovedPosts: number;
+  posters: string[];
+  filteredPosters: Observable<string[]>;
+  isPostLikeActive: Boolean = false;
+  bigScreen: Boolean;
 
   constructor(
     private _postService: PostService,
@@ -41,10 +47,18 @@ export class PostPageComponent implements OnInit {
     private _route: ActivatedRoute,
     private _router: Router,
     private _fb: FormBuilder,
+    private _breakpointObserver: BreakpointObserver,
+    private _dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
     this.reloadData();
+
+    this._breakpointObserver
+      .observe([Breakpoints.Small, Breakpoints.HandsetPortrait])
+      .subscribe((state: BreakpointState) => {
+        this.bigScreen = state.matches;
+      });
 
     this.commentForm = this._fb.group({
       text: ['', Validators.required],
@@ -56,46 +70,15 @@ export class PostPageComponent implements OnInit {
     this.commentForm.get('poster').valueChanges
       .subscribe((data: string) => { this.onPosterOptionChange(data); });
 
-    this.approvedPosts = this._postService.getPostByStatus();
-    this.numberOfApprovedPosts = this.approvedPosts.length;
+    this._postService.getPostByStatus()
+      .subscribe(data => { 
+        this.numberOfApprovedPosts = data.count;
+       });
 
-    // Sample data
-    this.post = {
-      id!: 1,
-      text!: `You don't see things like Guys in Nursing, Male in Maid, Female in Army, yet we keep seeing Female in Tech marketing gimmicks and programs exclusively for females. Everyone will lose their mind if they see a Male in Tech Hackathon and outright call it sexist, yet Female in Tech Hackathon is socially acceptable. Everytime I see another Female in Tech program, I just scoffed.`,
-      likes!: 1,
-      time_created!: new Date(),
-      approved!: true
-    };
-    this.comments = [
-      {
-        id!: 1,
-        post!: this.post,
-        text!: `Society is readjusting. Now days people want more equal distribution of demographics be it gender, race, religion, etc. That's why got these kind of ads. I don't see why anyone should feel triggered. Some of the ads, not even targeted towards you. And for those that are for "general audience" but the picture is a lady, I also don't see why there is a reason to complain. No need to see the lady for what she is (i.e. a woman), but rather who she is (i.e a person).`,
-        likes!: 1,
-        time_created!: new Date(),
-        poster!: 'Alex Onigawa',
-        approved!: true
-      },
-      {
-        id!: 2,
-        post!: this.post,
-        text!: `Actually computer engineering was originally considered a feminine profession in the 1950s - 1970s. This is until computing becomes commercialised and start to make money.....`,
-        likes!: 2,
-        time_created!: new Date(),
-        poster!: 'Harper Zheng',
-        approved!: true
-      },
-      {
-        id!: 3,
-        post!: this.post,
-        text!: `People who are qualified for the job should get the job, and not because of any other lame ass reason`,
-        likes!: 3,
-        time_created!: new Date(),
-        poster!: 'Daniel Ng',
-        approved!: true
-      },
-    ];
+    this.filteredPosters = this.commentForm.get('text').valueChanges.pipe(
+      startWith(''),
+      map(value => value.includes('@') ? this.filter(value) : [])
+    );
   }
 
   reloadData() {
@@ -118,87 +101,82 @@ export class PostPageComponent implements OnInit {
       })
     ).subscribe(
       ({ post, comments }) => {
-        this.post = post;
+        if (post.approved) {
+          this.post = post;
+        } else {
+          this._router.navigate(['/pageNotFound']);
+        }
         this.comments = comments.results;
+        this.posters = this.getPosters();
       },
       (err) => {
-        // fill in this part...
-        this._router.navigate(['/pageNotFound']); // ?
+        this._router.navigate(['/pageNotFound']);
         console.log(err);
       })
   }
 
-  // Not working
-  // checkAnonymous() {
-  //   const name = this.commentForm.get('name');
-  //   this.isAnonymous = true;
-  //   this.isReveal = false;
-  //   name.clearValidators();
-  //   name.setValue('');
-  //   name.disable();
-  //   name.updateValueAndValidity();
-  // }
-
-  // checkReveal() {
-  //   const name = this.commentForm.get('name');
-  //   this.isReveal = true;
-  //   this.isAnonymous = false;
-  //   name.setValidators(Validators.required);
-  //   name.enable();
-  //   name.updateValueAndValidity();
-  // }
-
-  // checkRevealAlt() {
-  //   const name = this.commentForm.get('name');
-  //   this.isReveal = true;
-  //   this.isAnonymous = false;
-  //   name.setValidators(Validators.required);
-  //   name.enable();
-  //   name.updateValueAndValidity();
-  // }
-
-  goPrevious() {
+  goPrevious(directives: FormGroupDirective) {
     let previousId = (this.post.id - 1) <= 0 ? this.numberOfApprovedPosts : this.post.id - 1;
-    // this._router.navigate(['home/post'], { queryParams: { id: previousId } });
+    this.resetCommentForm(directives);
+    this.isPostLikeActive = false;
     this._router.navigate(['./'],
       {
         relativeTo: this._route,
         queryParams: { id: previousId }
-      }); // relative navigation
+      });
   }
 
-  goNext() {
+  goNext(directives: FormGroupDirective) {
     let nextId = (this.post.id + 1) >= this.numberOfApprovedPosts ? 1 : this.post.id + 1;
-    // this._router.navigate(['home/post'], { queryParams: { id: nextId } });
+    this.resetCommentForm(directives);
+    this.isPostLikeActive = false;
     this._router.navigate(['./'],
       {
         relativeTo: this._route,
         queryParams: { id: nextId }
-      }); // relative navigation
+      });
   }
 
   updatePostLikes() {
-    this._postService.updateLikes(this.post.id, this.post.likes + 1)
-      .subscribe(() => { this.reloadData; });
+    if (this.isPostLikeActive) {
+      this._postService.updateLikes(this.post.id, this.post.likes - 1)
+        .subscribe(() => { 
+          this.isPostLikeActive = !this.isPostLikeActive;
+          this.reloadData(); });
+    } else {
+      this._postService.updateLikes(this.post.id, this.post.likes + 1)
+        .subscribe(() => { 
+          this.isPostLikeActive = !this.isPostLikeActive;
+          this.reloadData(); });
+    }
   }
 
   updateCommentLikes(comment: Comment) {
     this._commentService.updateLikes(comment.id, comment.likes + 1)
-      .subscribe(() => { this.reloadData; });
+      .subscribe(() => { this.reloadData(); });
   }
 
-  createNewComment(text: string, poster: string) {
+  createNewComment(text: string, poster: string, directives: FormGroupDirective) {
+    const numberOfAnonymousComments = this.getNumberOfAnonymousComments();
     const newComment = {
       id: this.comments.length + 1,
       post: this.post.id,
       text: text,
       likes: 0,
       time_created: new Date(),
-      poster: poster ? poster : 'Anonymous',
+      poster: poster ? poster : 'Anonymous#' + (numberOfAnonymousComments + 1).toString(),
       approved: false
     }
     this._commentService.createComment(newComment)
-      .subscribe(() => { this.reloadData; }); // subscribe need para?
+      .subscribe(() => { 
+        this._dialog.open(SubmitCommentComponent);
+        this.resetCommentForm(directives);
+        this.reloadData(); });
+  }
+
+  resetCommentForm(directives: FormGroupDirective) {
+    directives.resetForm();
+    this.commentForm.reset();
   }
 
   onPosterOptionChange(selectedValue: string) {
@@ -212,5 +190,31 @@ export class PostPageComponent implements OnInit {
       name.disable();
     }
     name.updateValueAndValidity();
+  }
+
+  getNumberOfAnonymousComments() {
+    let res = 0;
+    for (let i = 0; i < this.comments.length; i++) {
+      if (this.comments[i].poster.includes('Anonymous')) {
+        res++;
+      }
+    }
+    return res;
+  }
+
+  getPosters(): string[] {
+    let res = [];
+    for (let i = 0; i < this.comments.length; i++) {
+      res.push(('@' + this.comments[i].poster));
+    }
+    return res;
+  }
+
+  filter(value: string): string[] {
+    console.log(value);
+    const filterValue = value.toLowerCase();
+    return this.posters.filter(
+      poster => poster.toLowerCase().includes(filterValue)
+    )
   }
 }
