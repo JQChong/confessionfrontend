@@ -20,7 +20,12 @@
     </ng-container>
     <ng-container matColumnDef="text">
       <mat-header-cell *matHeaderCellDef>Post</mat-header-cell>
-      <mat-cell *matCellDef="let cell">{{ cell.text }}</mat-cell>
+      <mat-cell *matCellDef="let cell" >
+        <!-- {{ cell.text } -->
+        <div style="width: 90%;word-wrap: break-word;">
+          {{ cell.text }}
+      </div>
+    </mat-cell>
     </ng-container>
     <ng-container matColumnDef="time_created">
       <mat-header-cell *matHeaderCellDef>Time Created</mat-header-cell>
