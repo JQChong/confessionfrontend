@@ -1,0 +1,21 @@
+.same-line {
+    display    : flex;
+    align-items: center;
+}
+
+.reaction-summary {
+    position: absolute;
+    right   : 20px;
+}
+
+.paginator {
+    float: right;
+}
+
+.paginator>* {
+    margin: 5px;
+}
+
+.mat-card-title {
+    cursor: pointer;
+}

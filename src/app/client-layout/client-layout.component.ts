@@ -49,4 +49,12 @@ export class ClientLayoutComponent implements OnInit {
   onClick(category: string) {
     this.router.navigate(['home'], { queryParams: { category } });
   }
+
+  searchOnEnter(term: string) {
+    if (term) {
+      this.router.navigate(['home'], { queryParams: { search: term } });
+    } else {
+      this.router.navigate(['home']);
+    }
+  }
 }

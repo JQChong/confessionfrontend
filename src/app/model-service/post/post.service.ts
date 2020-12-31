@@ -53,6 +53,10 @@ export class PostService {
     return this.baseService.getObjectByParams(this.baseUrlPosts, params);
   }
 
+  searchPosts(search: string, page: number = 1): Observable<any> {
+    return this.baseService.getObjectByParams(this.baseUrlPosts, { search, approved: 'True', page });
+  }
+
   createPost(post: object): Observable<object> {
     return this.baseService.createObject(this.baseUrlPosts, post);
   }

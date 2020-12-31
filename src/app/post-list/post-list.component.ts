@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { formatDate } from '@angular/common';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { PostService } from '../model-service/post/post.service';
 
 @Component({
   selector: 'app-post-list',
@@ -22,9 +27,115 @@ export class PostListComponent implements OnInit {
    * the query parameters.
   */
 
-  constructor() { }
+  cards = [];
+  currentPage = 1;
+
+
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+
+  constructor(
+    private postService: PostService,
+    private snackBar: MatSnackBar,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
+    this.populateCards();
+  }
+
+  populateCards(): void {
+    this.cards = [];
+    this.postService.getPostByStatus('True', this.currentPage).subscribe(
+      data => {
+        console.log(data); // TODO comment out for production
+        for (let post of data.results) {
+          this.cards.push({
+            id: post.id,
+            preview: this.getPreview(post.text),
+            likes: post.likes,
+            date: this.getDisplayDate(post.time_created)
+          });
+        }
+      },
+      error => {
+        console.log("page out of range, revert to previous page");
+        this.currentPage -= 1;
+        this.populateCards();
+        this.snackBar.openFromComponent(LastPageComponent, {
+          duration: 2000,
+        });
+      }
+    );
+  }
+
+  getPreview(text: string): string {
+    const maxPreviewLength = 100;
+    if (text.length < maxPreviewLength) {
+      return text;
+    } else {
+      return text.slice(0, maxPreviewLength) + " ...";
+    }
+  }
+
+  getDisplayDate(date: Date): string {
+    const format = 'dd/MM/yyyy';
+    const locale = 'en-US';
+    return formatDate(date, format, locale);
+  }
+
+  routeToPost(id: number): void {
+    this.router.navigate(["/home/post"], { queryParams: { id } });
+  }
+
+  isFirstPage(): boolean {
+    return this.currentPage == 1;
+  }
+
+  isLastPage(): boolean {
+    /** 
+     * TODO need a method to check whether is last page efficiently
+     * for example query total number of posts and max number of posts per page
+     * then can calculate whether is last page
+     */
+    // THE FOLLOWING CAUSES INIFINITE LOOP SMH
+    // const posts = this.postService.getPostByStatus('True', this.currentPage + 1);
+    // let result = false;
+    // posts.subscribe(
+    //   data => { },
+    //   error => {
+    //     if (error['status'] == 404) {
+    //       // next page not available, means already last page
+    //       result = true;
+    //     } else {
+    //       console.log("unexpected error in isLastPage():", error);
+    //     }
+    //   }
+    // );
+    // return result;
+    return false;
+  }
+
+  onPreviousClick(): void {
+    if (this.currentPage > 1) {
+      this.currentPage -= 1;
+      this.populateCards();
+    }
+  }
+
+  onNextClick(): void {
+    this.currentPage += 1;
+    this.populateCards();
   }
 
 }
+
+@Component({
+  selector: 'last-page-snack',
+  templateUrl: 'last-page-snack.html',
+  styles: [`
+  .submitted {
+    color: white;
+  }
+`],
+})
+export class LastPageComponent { }

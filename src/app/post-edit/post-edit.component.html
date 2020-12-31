@@ -1,1 +1,30 @@
-<p>post-edit works!</p>
+<!-- TODO style with CSS -->
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Confess!</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <p>
+            Have something you wanted to say for a long time? Say it here! No one will know who
+            you
+            are.
+        </p>
+        <p>
+            Please remember to be socially responsible. No racial, religious or other forms of
+            sensitive material.
+        </p>
+        <p>
+            Happy confessing!
+        </p>
+    </mat-card-content>
+    <div>
+        <form [formGroup]="confessionForm" (ngSubmit)="onSubmit()">
+            <mat-form-field style="width:90%; max-width:750px;">
+                <textarea rows="6" matInput formControlName="text" placeholder="Your Confession"></textarea>
+            </mat-form-field>
+            <p>
+                <button mat-raised-button [disabled]="isPostValid()" type="submit">Submit</button>
+            </p>
+        </form>
+    </div>
+</mat-card>

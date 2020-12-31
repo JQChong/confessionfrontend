@@ -1,1 +1,28 @@
-<p>post-list works!!!</p>
+<div style="width: 95%; max-width: 750px;">
+    <mat-list>
+        <mat-card *ngFor="let card of cards">
+            <mat-card-header [routerLink]="['/home/post']" [queryParams]="{id: card.id}">
+                <mat-card-title><strong>#{{ card.id }}</strong></mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <div>{{ card.preview }}</div>
+                <div class="same-line">
+                    <span class="date">{{ card.date }}</span>
+                    <div class="same-line reaction-summary">
+                        <span class="material-icons" style="margin: 5px;">thumb_up</span>
+                        <span>{{ card.likes }}</span>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </mat-list>
+    <!-- can only query specific page of posts -->
+    <!-- mat-paginator needs all data -->
+    <!-- so create custom "paginator" -->
+    <div class="paginator">
+        <button mat-raised-button (click)="onPreviousClick()"
+            [disabled]="isFirstPage()">Previous</button>
+        <span>Page {{ currentPage }}</span>
+        <button mat-raised-button (click)="onNextClick()" [disabled]="isLastPage()">Next</button>
+    </div>
+</div>
