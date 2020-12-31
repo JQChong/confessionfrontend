@@ -24,6 +24,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ComponentBridgingService } from './model-service/componentbridging.service';
@@ -63,6 +65,8 @@ import { NotFoundComponent } from './not-found/not-found.component';
     MatSnackBarModule,
     FlexLayoutModule,
     MatTableModule,
+    MatPaginatorModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     ComponentBridgingService

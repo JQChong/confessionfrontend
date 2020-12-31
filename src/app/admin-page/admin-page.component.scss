@@ -1,4 +1,4 @@
-mat-table {
+mat-table, mat-paginator{
   width: 90%;
   margin-left: 5%;
   margin-right: 5%;
@@ -14,5 +14,22 @@ mat-cell {
 }
 
 .table {
-  margin-top: 30px;
+  margin-top: 50px;
+}
+
+.message {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+}
+
+.spinner-container{
+  margin: auto;
+  width: 20%;
+  padding: 10px;
+}
+
+.mat-column-id {
+  flex: 0 0 2% !important;
+  min-width: 50px !important;
 }
