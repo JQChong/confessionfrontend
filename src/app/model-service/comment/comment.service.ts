@@ -68,7 +68,7 @@ export class CommentDataSource implements DataSource<Comment> {
   }
 
   disconnect(collectionViewer: CollectionViewer): void {
-    this.commentsLength.complete
+    this.commentsLength.complete()
     this.commentsSubject.complete();
     this.loadingSubject.complete();
   }

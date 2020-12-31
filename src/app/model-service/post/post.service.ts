@@ -90,7 +90,7 @@ export class PostDataSource implements DataSource<Post> {
   }
 
   disconnect(collectionViewer: CollectionViewer): void {
-    this.postsLength.complete
+    this.postsLength.complete();
     this.postsSubject.complete();
     this.loadingSubject.complete();
   }
