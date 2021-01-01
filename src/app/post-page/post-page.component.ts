@@ -10,8 +10,6 @@ import { map, switchMap, startWith } from 'rxjs/operators';
 import { Observable, zip } from 'rxjs';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
-import { ThisReceiver } from '@angular/compiler';
-
 
 @Component({
   selector: 'app-post-page',
@@ -112,6 +110,7 @@ export class PostPageComponent implements OnInit {
           this._router.navigate(['/pageNotFound']);
         }
         this.comments = comments.results;
+        this.getAnonymousId(this.comments);
         this.isNextPage = comments.next !== null ? true : false;
         this.posters = this.getPosters();
       },
@@ -121,12 +120,16 @@ export class PostPageComponent implements OnInit {
       })
   }
 
-  goPrevious(directives: FormGroupDirective) {
-    let previousId = (this.post.id - 1) <= 0 ? this.numberOfApprovedPosts : this.post.id - 1;
+  nextPreviousReset(directives: FormGroupDirective) {
     this.resetCommentForm(directives);
     this.nextPage = 2;
     this.isNextPage = false;
     this.isPostLikeActive = false;
+  }
+
+  goPrevious(directives: FormGroupDirective) {
+    let previousId = (this.post.id - 1) <= 0 ? this.numberOfApprovedPosts : this.post.id - 1;
+    this.nextPreviousReset(directives);
     this._router.navigate(['./'],
       {
         relativeTo: this._route,
@@ -136,10 +139,7 @@ export class PostPageComponent implements OnInit {
 
   goNext(directives: FormGroupDirective) {
     let nextId = (this.post.id + 1) >= this.numberOfApprovedPosts ? 1 : this.post.id + 1;
-    this.resetCommentForm(directives);
-    this.nextPage = 2;
-    this.isNextPage = false;
-    this.isPostLikeActive = false;
+    this.nextPreviousReset(directives);
     this._router.navigate(['./'],
       {
         relativeTo: this._route,
@@ -151,19 +151,21 @@ export class PostPageComponent implements OnInit {
     if (this.isPostLikeActive) {
       this._postService.updateLikes(this.post.id, this.post.likes - 1)
         .subscribe(() => { 
-          this.isPostLikeActive = !this.isPostLikeActive;
-          this.reloadData(); });
+          this.isPostLikeActive = !this.isPostLikeActive;});
+      this.post.likes--;
     } else {
       this._postService.updateLikes(this.post.id, this.post.likes + 1)
         .subscribe(() => { 
-          this.isPostLikeActive = !this.isPostLikeActive;
-          this.reloadData(); });
+          this.isPostLikeActive = !this.isPostLikeActive;});
+      this.post.likes++;
     }
   }
 
   updateCommentLikes(comment: Comment) {
     this._commentService.updateLikes(comment.id, comment.likes + 1)
-      .subscribe(() => { this.reloadData(); });
+      .subscribe(() => { 
+        comment.likes++;
+       });
   }
 
   createNewComment(text: string, poster: string, directives: FormGroupDirective) {
@@ -171,7 +173,8 @@ export class PostPageComponent implements OnInit {
     const newComment = {
       post: this.post.id,
       text: text,
-      poster: poster ? poster : 'Anonymous#' + (numberOfAnonymousComments + 1).toString(),
+      // poster: poster ? poster : 'Anonymous#' + (numberOfAnonymousComments + 1).toString(),
+      poster: poster ? poster : 'Anonymous'
     }
     this._commentService.createComment(newComment)
       .subscribe(() => { 
@@ -229,10 +232,20 @@ export class PostPageComponent implements OnInit {
         .subscribe(comments => {
           for (let comment of comments.results) {
             this.isNextPage = comments.next !== null ? true : false;
-            this.nextPage++;
             this.comments.push(comment);
           }
+          this.nextPage++;
+          this.getAnonymousId(this.comments, (this.nextPage - 2) * 10 + 1);
         });
+    }
+  }
+
+  getAnonymousId(comments: Comment[], anonymousId: number = 1) {
+    for (let comment of comments) {
+      if (comment.poster === "Anonymous") {
+        comment.poster = 'Anonymous#' + anonymousId;
+        anonymousId++;
+      }
     }
   }
 }
