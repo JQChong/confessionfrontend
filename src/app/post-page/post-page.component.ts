@@ -10,6 +10,7 @@ import { map, switchMap, startWith } from 'rxjs/operators';
 import { Observable, zip } from 'rxjs';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
+import { ThisReceiver } from '@angular/compiler';
 
 
 @Component({
@@ -32,7 +33,7 @@ export class PostPageComponent implements OnInit {
    * very not nice if i press previous post and then i get sent to 404 page haha
    */
 
-  post: Post; // izit any?
+  post: Post;
   comments: Comment[];
   commentForm: FormGroup;
   numberOfApprovedPosts: number;
@@ -40,6 +41,9 @@ export class PostPageComponent implements OnInit {
   filteredPosters: Observable<string[]>;
   isPostLikeActive: Boolean = false;
   bigScreen: Boolean;
+  nextPage: number = 2;
+  isNextPage: boolean = false;
+  postId: number;
 
   constructor(
     private _postService: PostService,
@@ -93,6 +97,7 @@ export class PostPageComponent implements OnInit {
     this._route.queryParams.pipe(
       map(params => Number(params['id'])),
       switchMap((postId) => {
+        this.postId = postId;
         const post$ = this._postService.getPostById(postId)
         const comments$ = this._commentService.getCommentsByPost(postId)
 
@@ -107,6 +112,7 @@ export class PostPageComponent implements OnInit {
           this._router.navigate(['/pageNotFound']);
         }
         this.comments = comments.results;
+        this.isNextPage = comments.next !== null ? true : false;
         this.posters = this.getPosters();
       },
       (err) => {
@@ -118,6 +124,8 @@ export class PostPageComponent implements OnInit {
   goPrevious(directives: FormGroupDirective) {
     let previousId = (this.post.id - 1) <= 0 ? this.numberOfApprovedPosts : this.post.id - 1;
     this.resetCommentForm(directives);
+    this.nextPage = 2;
+    this.isNextPage = false;
     this.isPostLikeActive = false;
     this._router.navigate(['./'],
       {
@@ -129,6 +137,8 @@ export class PostPageComponent implements OnInit {
   goNext(directives: FormGroupDirective) {
     let nextId = (this.post.id + 1) >= this.numberOfApprovedPosts ? 1 : this.post.id + 1;
     this.resetCommentForm(directives);
+    this.nextPage = 2;
+    this.isNextPage = false;
     this.isPostLikeActive = false;
     this._router.navigate(['./'],
       {
@@ -159,19 +169,14 @@ export class PostPageComponent implements OnInit {
   createNewComment(text: string, poster: string, directives: FormGroupDirective) {
     const numberOfAnonymousComments = this.getNumberOfAnonymousComments();
     const newComment = {
-      id: this.comments.length + 1,
       post: this.post.id,
       text: text,
-      likes: 0,
-      time_created: new Date(),
       poster: poster ? poster : 'Anonymous#' + (numberOfAnonymousComments + 1).toString(),
-      approved: false
     }
     this._commentService.createComment(newComment)
       .subscribe(() => { 
         this._dialog.open(SubmitCommentComponent);
-        this.resetCommentForm(directives);
-        this.reloadData(); });
+        this.resetCommentForm(directives); });
   }
 
   resetCommentForm(directives: FormGroupDirective) {
@@ -216,5 +221,18 @@ export class PostPageComponent implements OnInit {
     return this.posters.filter(
       poster => poster.toLowerCase().includes(filterValue)
     )
+  }
+
+  loadMoreComments() {
+    if (this.isNextPage) {
+      this._commentService.getCommentsByPost(this.postId, this.nextPage)
+        .subscribe(comments => {
+          for (let comment of comments.results) {
+            this.isNextPage = comments.next !== null ? true : false;
+            this.nextPage++;
+            this.comments.push(comment);
+          }
+        });
+    }
   }
 }

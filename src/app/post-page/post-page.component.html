@@ -24,7 +24,6 @@
         </mat-card-header>
         <mat-card-actions style="padding:10px 25px;">
             <button mat-raised-button [color]="isPostLikeActive ? 'warn' : 'primary'" (click)="updatePostLikes()">LIKE</button>
-            <button mat-raised-button color="primary" (click)="text.focus()">COMMENT</button>
         </mat-card-actions>
         <mat-card-content>
             <div>
@@ -78,6 +77,9 @@
                     </span>
                 </div>
             </div>
+            <span style="display:flex; justify-content:flex-end;">
+                <button mat-button *ngIf="isNextPage" (click)="loadMoreComments()">See More...</button>
+            </span>
         </mat-card-content>
     </mat-card>
 </div>
