@@ -40,7 +40,7 @@ export class PostPageComponent implements OnInit {
   isPostLikeActive: Boolean = false;
   bigScreen: Boolean;
   nextPage: number = 2;
-  isNextPage: boolean = false;
+  hasNextPage: Boolean = false;
   postId: number;
 
   constructor(
@@ -67,8 +67,8 @@ export class PostPageComponent implements OnInit {
       poster: ['', Validators.required],
       name: ['', '']
     });
-
     this.commentForm.get('name').disable();
+
     this.commentForm.get('poster').valueChanges
       .subscribe((data: string) => { this.onPosterOptionChange(data); });
 
@@ -81,6 +81,8 @@ export class PostPageComponent implements OnInit {
       startWith(''),
       map(value => value.includes('@') ? this.filter(value) : [])
     );
+
+    this.isPostLikeActive = JSON.parse(localStorage.getItem(`p${this.postId}`));
   }
 
   reloadData() {
@@ -110,26 +112,30 @@ export class PostPageComponent implements OnInit {
           this._router.navigate(['/pageNotFound']);
         }
         this.comments = comments.results;
-        this.getAnonymousId(this.comments);
-        this.isNextPage = comments.next !== null ? true : false;
+        this.setAnonymousId(this.comments);
+        this.hasNextPage = comments.next !== null ? true : false;
         this.posters = this.getPosters();
       },
       (err) => {
         this._router.navigate(['/pageNotFound']);
-        console.log(err);
+        // console.log(err);
       })
   }
 
-  nextPreviousReset(directives: FormGroupDirective) {
+  nextPreviousReset(directives: FormGroupDirective, id: number) {
     this.resetCommentForm(directives);
     this.nextPage = 2;
-    this.isNextPage = false;
-    this.isPostLikeActive = false;
+    this.hasNextPage = false;
+    this.isPostLikeActive = JSON.parse(localStorage.getItem(`p${id}`));
+    this.filteredPosters = this.commentForm.get('text').valueChanges.pipe(
+      startWith(''),
+      map(value => value.includes('@') ? this.filter(value) : [])
+    );
   }
 
   goPrevious(directives: FormGroupDirective) {
     let previousId = (this.post.id - 1) <= 0 ? this.numberOfApprovedPosts : this.post.id - 1;
-    this.nextPreviousReset(directives);
+    this.nextPreviousReset(directives, previousId);
     this._router.navigate(['./'],
       {
         relativeTo: this._route,
@@ -139,7 +145,7 @@ export class PostPageComponent implements OnInit {
 
   goNext(directives: FormGroupDirective) {
     let nextId = (this.post.id + 1) >= this.numberOfApprovedPosts ? 1 : this.post.id + 1;
-    this.nextPreviousReset(directives);
+    this.nextPreviousReset(directives, nextId);
     this._router.navigate(['./'],
       {
         relativeTo: this._route,
@@ -147,33 +153,42 @@ export class PostPageComponent implements OnInit {
       });
   }
 
+  updateLocalStorage(key: string, value: string) {
+    localStorage.removeItem(key);
+    localStorage.setItem(key, value);
+  }
+
   updatePostLikes() {
     if (this.isPostLikeActive) {
-      this._postService.updateLikes(this.post.id, this.post.likes - 1)
-        .subscribe(() => { 
-          this.isPostLikeActive = !this.isPostLikeActive;});
+      this._postService.updateLikes(this.post.id, this.post.likes - 1).subscribe();
       this.post.likes--;
+      this.updateLocalStorage(`p${this.postId}`, JSON.stringify(!this.isPostLikeActive));
+      this.isPostLikeActive = JSON.parse(localStorage.getItem(`p${this.postId}`));
     } else {
-      this._postService.updateLikes(this.post.id, this.post.likes + 1)
-        .subscribe(() => { 
-          this.isPostLikeActive = !this.isPostLikeActive;});
+      this._postService.updateLikes(this.post.id, this.post.likes + 1).subscribe();
       this.post.likes++;
+      this.updateLocalStorage(`p${this.postId}`, JSON.stringify(!this.isPostLikeActive));
+      this.isPostLikeActive = JSON.parse(localStorage.getItem(`p${this.postId}`));
     }
   }
 
   updateCommentLikes(comment: Comment) {
-    this._commentService.updateLikes(comment.id, comment.likes + 1)
-      .subscribe(() => { 
-        comment.likes++;
-       });
+    let isCommentLikeActive = JSON.parse(localStorage.getItem(`c${comment.id}p${this.postId}`));
+    if (isCommentLikeActive) {
+      this._commentService.updateLikes(comment.id, comment.likes - 1).subscribe();
+      comment.likes--;
+      this.updateLocalStorage(`c${comment.id}p${this.postId}`, 'false');
+    } else {
+      this._commentService.updateLikes(comment.id, comment.likes + 1).subscribe();
+      comment.likes++;
+      this.updateLocalStorage(`c${comment.id}p${this.postId}`, 'true');
+    }
   }
 
   createNewComment(text: string, poster: string, directives: FormGroupDirective) {
-    const numberOfAnonymousComments = this.getNumberOfAnonymousComments();
     const newComment = {
       post: this.post.id,
       text: text,
-      // poster: poster ? poster : 'Anonymous#' + (numberOfAnonymousComments + 1).toString(),
       poster: poster ? poster : 'Anonymous'
     }
     this._commentService.createComment(newComment)
@@ -200,16 +215,6 @@ export class PostPageComponent implements OnInit {
     name.updateValueAndValidity();
   }
 
-  getNumberOfAnonymousComments() {
-    let res = 0;
-    for (let i = 0; i < this.comments.length; i++) {
-      if (this.comments[i].poster.includes('Anonymous')) {
-        res++;
-      }
-    }
-    return res;
-  }
-
   getPosters(): string[] {
     let res = [];
     for (let i = 0; i < this.comments.length; i++) {
@@ -227,25 +232,30 @@ export class PostPageComponent implements OnInit {
   }
 
   loadMoreComments() {
-    if (this.isNextPage) {
+    if (this.hasNextPage) {
       this._commentService.getCommentsByPost(this.postId, this.nextPage)
         .subscribe(comments => {
           for (let comment of comments.results) {
-            this.isNextPage = comments.next !== null ? true : false;
             this.comments.push(comment);
           }
+          this.hasNextPage = comments.next !== null ? true : false;
           this.nextPage++;
-          this.getAnonymousId(this.comments, (this.nextPage - 2) * 10 + 1);
+          this.setAnonymousId(this.comments, (this.nextPage - 2) * 10 + 1);
+          this.posters = this.getPosters();
         });
     }
   }
 
-  getAnonymousId(comments: Comment[], anonymousId: number = 1) {
+  setAnonymousId(comments: Comment[], anonymousId: number = 1) {
     for (let comment of comments) {
       if (comment.poster === "Anonymous") {
         comment.poster = 'Anonymous#' + anonymousId;
         anonymousId++;
       }
     }
+  }
+
+  isCommentLikeActive(id: number) {
+    return JSON.parse(localStorage.getItem(`c${id}p${this.postId}`)) ? true : false;
   }
 }

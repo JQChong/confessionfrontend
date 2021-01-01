@@ -30,7 +30,7 @@
                 <form [formGroup]="commentForm" #formDirective="ngForm" class="comment">
                     <mat-form-field floatLabel="never" style="padding:5px; width:98%;">
                         <mat-label>Write a comment...</mat-label>
-                        <textarea matInput #text formControlName="text"  [matAutocomplete]="auto"></textarea>
+                        <textarea matInput #text formControlName="text" [matAutocomplete]="auto"></textarea>
                         <mat-autocomplete #auto="matAutocomplete">
                             <mat-option *ngFor="let poster of filteredPosters | async" [value]="poster">
                                 {{poster}}
@@ -73,7 +73,9 @@
                             &middot;
                             {{comment.time_created | date:'short'}}
                         </span>
-                        <a style="cursor:pointer;" (click)="updateCommentLikes(comment)">Like</a>
+                        <span [class.red]="isCommentLikeActive(comment.id)">
+                            <a style="cursor:pointer;" (click)="updateCommentLikes(comment)">Like</a>
+                        </span>
                     </span>
                 </div>
             </div>
