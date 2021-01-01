@@ -20,10 +20,13 @@
     <div>
         <form [formGroup]="confessionForm" (ngSubmit)="onSubmit()">
             <mat-form-field style="width:90%; max-width:750px;">
-                <textarea rows="6" matInput formControlName="text" placeholder="Your Confession"></textarea>
+                <textarea rows="6" matInput formControlName="text"
+                    placeholder="Your Confession"></textarea>
             </mat-form-field>
             <p>
-                <button mat-raised-button [disabled]="isPostValid()" type="submit">Submit</button>
+                <button id="submitBtn" mat-raised-button
+                    [disabled]="!confessionForm.dirty || !confessionForm.valid || !isPostValid()"
+                    type="submit">Submit</button>
             </p>
         </form>
     </div>
