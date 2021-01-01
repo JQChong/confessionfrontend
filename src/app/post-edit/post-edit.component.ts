@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, NgForm } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarConfig, MatSnackBarRef } from '@angular/material/snack-bar';
 import { Post } from '../model-service/post/post';
 import { PostService } from '../model-service/post/post.service';
 
@@ -17,6 +17,11 @@ export class PostEditComponent implements OnInit {
    */
 
   confessionForm: FormGroup;
+  configSuccess: MatSnackBarConfig = {
+    panelClass: "style-success",
+    duration: 10000,
+    verticalPosition: "bottom"
+  }
 
   constructor(
     private postService: PostService,
@@ -57,7 +62,7 @@ export class PostEditComponent implements OnInit {
 
   openSnackBar(): void {
     this.snackBar.openFromComponent(SubmittedComponent, {
-      duration: 2000,
+      ...this.configSuccess
     });
   }
 
@@ -72,4 +77,8 @@ export class PostEditComponent implements OnInit {
     }
   `],
 })
-export class SubmittedComponent { }
+export class SubmittedComponent {
+  constructor(
+    public snackBarRef: MatSnackBarRef<SubmittedComponent>
+  ) { }
+}
