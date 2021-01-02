@@ -80,7 +80,7 @@
                 </div>
             </div>
             <span style="display:flex; justify-content:flex-end;">
-                <button mat-button *ngIf="isNextPage" (click)="loadMoreComments()">See More...</button>
+                <button mat-button *ngIf="hasNextPage" (click)="loadMoreComments()">See More...</button>
             </span>
         </mat-card-content>
     </mat-card>
