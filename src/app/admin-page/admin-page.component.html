@@ -8,43 +8,64 @@
   </mat-toolbar>
 </div>
 
-<section class='table'>
-  <h1 class='header'>Posts</h1>
+<div class="table" class="mat-elevation-z8">
+  <h1 class="header">Posts</h1>
+  <div class="spinner-container" *ngIf="posts.loading$ | async">
+    <mat-spinner></mat-spinner>
+  </div>
   <mat-table [dataSource]="posts" class="mat-elevation-z8">
     <ng-container matColumnDef="id">
-        <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
-        <mat-cell *matCellDef="let cell">{{ cell.id }}</mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="text">
-        <mat-header-cell *matHeaderCellDef>Post</mat-header-cell>
-        <mat-cell *matCellDef="let cell">{{ cell.text }}</mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="time_created">
-        <mat-header-cell *matHeaderCellDef>Time Created</mat-header-cell>
-        <mat-cell *matCellDef="let cell">{{ cell.time_created }}</mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="approved">
-        <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
-        <mat-cell *matCellDef="let cell">
-          <button mat-button color="primary" (click)="updateState('Post',true, cell.id)">
-            Approve
-          </button>
-          <button
+      <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
+      <mat-cell *matCellDef="let cell">{{ cell.id }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="text">
+      <mat-header-cell *matHeaderCellDef>Post</mat-header-cell>
+      <mat-cell *matCellDef="let cell" >
+        <!-- {{ cell.text } -->
+        <div style="width: 90%;word-wrap: break-word;">
+          {{ cell.text }}
+      </div>
+    </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="time_created">
+      <mat-header-cell *matHeaderCellDef>Time Created</mat-header-cell>
+      <mat-cell *matCellDef="let cell">{{ cell.time_created | date:'medium'}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="action">
+      <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
+      <mat-cell *matCellDef="let cell">
+        <button
           mat-button
-            color="secondary"
-            (click)="updateState('Post',false, cell.id)"
-          >
-            Reject
-          </button>
-        </mat-cell>
-      </ng-container>
-      <mat-header-row *matHeaderRowDef="postTableColumns"></mat-header-row>
-      <mat-row *matRowDef="let cell; columns: postTableColumns"></mat-row>
-    </mat-table>
-</section>
+          color="primary"
+          (click)="updateState('Post', true, cell.id)"
+        >
+          Approve
+        </button>
+        <button
+          mat-button
+          color="secondary"
+          (click)="updateState('Post', false, cell.id)"
+        >
+          Reject
+        </button>
+      </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="postTableColumns"></mat-header-row>
+    <mat-row *matRowDef="let cell; columns: postTableColumns"></mat-row>
+  </mat-table>
+  <div class="message" *ngIf="(posts.length$ | async) === 0">No records found</div>
+  <mat-paginator
+    [pageSize]="10"
+    [length]="posts.length$ | async"
+    #PostsPaginator="matPaginator"
+  ></mat-paginator>
+</div>
 
-<section class='table'>
-  <h1 class='header'>Comments</h1>
+<div class="table" class="mat-elevation-z8">
+  <h1 class="header">Comments</h1>
+  <div class="spinner-container" *ngIf="comments.loading$ | async">
+    <mat-spinner></mat-spinner>
+  </div>
   <mat-table [dataSource]="comments" class="mat-elevation-z8">
     <ng-container matColumnDef="id">
       <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
@@ -58,20 +79,28 @@
       <mat-header-cell *matHeaderCellDef>Comment</mat-header-cell>
       <mat-cell *matCellDef="let cell">{{ cell.text }}</mat-cell>
     </ng-container>
+    <ng-container matColumnDef="poster">
+      <mat-header-cell *matHeaderCellDef>Poster</mat-header-cell>
+      <mat-cell *matCellDef="let cell">{{ cell.poster }}</mat-cell>
+    </ng-container>
     <ng-container matColumnDef="time_created">
       <mat-header-cell *matHeaderCellDef>Time Created</mat-header-cell>
-      <mat-cell *matCellDef="let cell">{{ cell.time_created }}</mat-cell>
+      <mat-cell *matCellDef="let cell">{{ cell.time_created | date:'medium'}}</mat-cell>
     </ng-container>
-    <ng-container matColumnDef="approved">
+    <ng-container matColumnDef="action">
       <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
       <mat-cell *matCellDef="let cell">
-        <button mat-button color="primary" (click)="updateState('Comment',true, cell.id)">
+        <button
+          mat-button
+          color="primary"
+          (click)="updateState('Comment', true, cell.id)"
+        >
           Approve
         </button>
         <button
           mat-button
           color="secondary"
-          (click)="updateState('Comment',false, cell.id)"
+          (click)="updateState('Comment', false, cell.id)"
         >
           Reject
         </button>
@@ -80,4 +109,11 @@
     <mat-header-row *matHeaderRowDef="commentTableColumns"></mat-header-row>
     <mat-row *matRowDef="let cell; columns: commentTableColumns"></mat-row>
   </mat-table>
-</section>
+  <div class="message" *ngIf="(comments.length$ | async) === 0">No records found</div>
+  <mat-paginator
+    [pageSize]="10"
+    [length]="comments.length$ | async"
+    #CommentsPaginator="matPaginator"
+  ></mat-paginator>
+  
+</div>
