@@ -1,30 +1,37 @@
-import { Component, OnInit } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
-import { Post } from '../model-service/post/post';
-import { Comment } from '../model-service/comment/comment';
-import { PostService } from '../model-service/post/post.service';
-import { CommentService } from '../model-service/comment/comment.service';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import {
+  PostDataSource,
+  PostService,
+} from '../model-service/post/post.service';
+import {
+  CommentService,
+  CommentDataSource,
+} from '../model-service/comment/comment.service';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-admin-page',
   templateUrl: './admin-page.component.html',
   styleUrls: ['./admin-page.component.scss'],
 })
-export class AdminPageComponent implements OnInit {
+export class AdminPageComponent implements AfterViewInit, OnInit {
   /**
    * Intended method: Include two lists/tables (your choice), one is for unapproved posts, the other is for
    * unapproved comments. Admin should be able to approve a post in minimal moves, e.g. within 2 clicks.
    */
-  posts = new MatTableDataSource<Post>();
-  comments = new MatTableDataSource<Comment>();
+  
+  posts: PostDataSource;
+  comments: CommentDataSource;
 
-  postTableColumns: string[] = ['id', 'text', 'time_created', 'approved'];
+  postTableColumns: string[] = ['id', 'text', 'time_created', 'action'];
   commentTableColumns: string[] = [
     'id',
     'post',
     'text',
+    'poster',
     'time_created',
-    'approved',
+    'action',
   ];
 
   constructor(
@@ -32,76 +39,51 @@ export class AdminPageComponent implements OnInit {
     private commentService: CommentService
   ) {}
 
+  @ViewChild('PostsPaginator') postsPaginator: MatPaginator;
+  @ViewChild('CommentsPaginator') commentsPaginator: MatPaginator;
+
   ngOnInit(): void {
-    this.reloadData();
+    this.posts = new PostDataSource(this.postService);
+    this.posts.loadPost(1);
+    this.comments = new CommentDataSource(this.commentService);
+    this.comments.loadComment(1);
   }
 
-  reloadData() {
-    this.postService.getPostByStatus('False').subscribe((data) => {
-      console.log(data)
-      this.posts.data = data.results
-    })
-    this.commentService.getCommentsByStatus('False').subscribe((data) => {
-      this.comments.data = data.results
-    })
+  ngAfterViewInit() {
+    this.postsPaginator.page.pipe(tap(() => this.loadPostPage())).subscribe();
+    this.commentsPaginator.page
+      .pipe(tap(() => this.loadCommentPage()))
+      .subscribe();
+  }
 
-    // Mock data
-    // this.posts.data = [
-    //   {
-    //     id: 1,
-    //     text: 'test',
-    //     likes: 10,
-    //     time_created: new Date(),
-    //     approved: false,
-    //   },
-    //   {
-    //     id: 2,
-    //     text: 'test2',
-    //     likes: 10,
-    //     time_created: new Date(),
-    //     approved: false,
-    //   },
-    // ];
-    // this.comments.data = [
-    //   {
-    //     id: 1,
-    //     post: this.posts.data[0],
-    //     text: 'testComment',
-    //     likes: 10,
-    //     time_created: new Date(),
-    //     poster: 'test',
-    //     approved: false,
-    //   },
-    //   {
-    //     id: 2,
-    //     post: this.posts.data[1],
-    //     text: 'testComment2',
-    //     likes: 10,
-    //     time_created: new Date(),
-    //     poster: 'test2',
-    //     approved: false,
-    //   },
-    // ];
+  loadPostPage() {
+    this.posts.loadPost(this.postsPaginator.pageIndex + 1);
+  }
+
+  loadCommentPage() {
+    this.comments.loadComment(this.commentsPaginator.pageIndex + 1);
   }
 
   updateState(type: 'Comment' | 'Post', state: Boolean, id: number): void {
     console.log('Type', type, 'State', state, 'Id', id);
     if (type === 'Post') {
       if (state) {
-        this.postService.approvePost(id).subscribe();
+        this.postService.approvePost(id).subscribe(() => this.loadPostPage());
       } else {
-        this.postService.deletePost(id).subscribe();
+        this.postService.deletePost(id).subscribe(() => this.loadPostPage());
       }
-      this.posts.data = this.posts.data.filter(comment=>comment.id!==id)
     } else if (type === 'Comment') {
       if (state) {
-        this.commentService.approveComment(id).subscribe();
+        this.commentService
+          .approveComment(id)
+          .subscribe(() => this.loadCommentPage());
       } else {
-        this.commentService.deleteComment(id).subscribe();
+        this.commentService
+          .deleteComment(id)
+          .subscribe(() => this.loadCommentPage());
       }
-      this.comments.data = this.comments.data.filter(comment=>comment.id!==id)
     } else {
-      throw new Error('Wrong type')
+      throw new Error('Wrong type');
     }
   }
 }

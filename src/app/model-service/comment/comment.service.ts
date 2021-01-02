@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { BaseService } from '../base.service';
+import { CollectionViewer, DataSource } from '@angular/cdk/collections';
+import { Comment } from './comment';
+import { catchError, finalize } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -46,5 +49,43 @@ export class CommentService {
 
   deleteComment(id: number): Observable<any> {
     return this.baseService.deleteObject(this.baseUrlComments, id);
+  }
+}
+
+// Replace MatTableDataSource with custom DataSource since we're using server side pagination
+export class CommentDataSource implements DataSource<Comment> {
+  private commentsSubject = new BehaviorSubject<Comment[]>([]);
+  private commentsLength = new BehaviorSubject<number>(0);
+  private loadingSubject = new BehaviorSubject<boolean>(false);
+
+  public loading$ = this.loadingSubject.asObservable();
+  public length$ = this.commentsLength.asObservable()
+
+  constructor(private commentService: CommentService) {}
+
+  connect(collectionViewer: CollectionViewer): Observable<Comment[]> {
+    return this.commentsSubject.asObservable();
+  }
+
+  disconnect(collectionViewer: CollectionViewer): void {
+    this.commentsLength.complete()
+    this.commentsSubject.complete();
+    this.loadingSubject.complete();
+  }
+
+  loadComment(pageIndex: number) {
+    this.loadingSubject.next(true);
+
+    this.commentService
+      .getCommentsByStatus('False', pageIndex)
+      .pipe(
+        catchError(() => of([])),
+        finalize(() => this.loadingSubject.next(false))
+      )
+      .subscribe((comments) => {
+        console.log(comments)
+        this.commentsLength.next(comments.count)
+        this.commentsSubject.next(comments.results)
+      });
   }
 }
