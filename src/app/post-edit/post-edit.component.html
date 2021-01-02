@@ -1,33 +1,30 @@
-<!-- TODO style with CSS -->
-<mat-card>
-    <mat-card-header>
-        <mat-card-title>Confess!</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-        <p>
-            Have something you wanted to say for a long time? Say it here! No one will know who
-            you
-            are.
-        </p>
-        <p>
-            Please remember to be socially responsible. No racial, religious or other forms of
-            sensitive material.
-        </p>
-        <p>
-            Happy confessing!
-        </p>
-    </mat-card-content>
-    <div>
+<div style="margin: 24px;">
+    <h1>Confess!</h1>
+    <p>
+        Have something you wanted to say for a long time? Say it here! No one will know who you are.
+        <br>
+        Please remember to be socially responsible. No racial, religious or other forms of sensitive
+        material.
+        <br>
+        Happy confessing!
+    </p>
+    <section>
         <form [formGroup]="confessionForm" (ngSubmit)="onSubmit()">
             <mat-form-field style="width:90%; max-width:750px;">
-                <textarea rows="6" matInput formControlName="text"
+                <textarea matNativeControl rows="6" matInput formControlName="text"
                     placeholder="Your Confession"></textarea>
             </mat-form-field>
-            <p>
-                <button id="submitBtn" mat-raised-button
-                    [disabled]="!confessionForm.dirty || !confessionForm.valid || !isPostValid()"
-                    type="submit">Submit</button>
-            </p>
+            <br>
+            Categories:
+            <label *ngFor="let category of allCategories">
+                <input type="checkbox" [formControlName]="category.name" [value]="category">
+                {{ category.name }}
+            </label>
+            <br>
+            <br>
+            <button id="submitBtn" mat-raised-button
+                [disabled]="!confessionForm.dirty || !confessionForm.valid || !isPostValid()"
+                type="submit">Submit</button>
         </form>
-    </div>
-</mat-card>
+    </section>
+</div>

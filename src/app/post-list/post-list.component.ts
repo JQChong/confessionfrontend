@@ -32,19 +32,15 @@ export class PostListComponent implements OnInit {
   page = 1;
   isFirstPage = false;
   isLastPage = false;
-  resultsDiv: HTMLElement;
-  noResultDiv: HTMLElement;
 
   constructor(
     private postService: PostService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
     this.loadPage();
-    this.resultsDiv = document.getElementById("Results");
-    this.noResultDiv = document.getElementById("NoResult");
   }
 
   loadPage(): void {
@@ -54,17 +50,12 @@ export class PostListComponent implements OnInit {
       })
     ).subscribe(
       data => {
-        console.log(data);
+        console.log(data.results);
         this.cards = [];
         this.updateIsFirstPage();
         this.updateIsLastPage();
         if (data.results.length > 0) {
           this.populateCards(data);
-          this.resultsDiv.hidden = false;
-          this.noResultDiv.hidden = true;
-        } else {
-          this.resultsDiv.hidden = true;
-          this.noResultDiv.hidden = false;
         }
       },
       error => {
@@ -100,7 +91,7 @@ export class PostListComponent implements OnInit {
     this.search = !this.search ? "" : String(this.search);
     this.page = params["page"];
     this.page = !this.page ? 1 : Number(this.page);
-    console.log(this.search, this.page);
+    console.log("search:", this.search, "page:", this.page);
     const posts = this.postService.searchPosts(this.search, this.page);
     return posts;
   }
@@ -111,7 +102,8 @@ export class PostListComponent implements OnInit {
         id: post.id,
         preview: this.getPreview(post.text),
         likes: post.likes,
-        date: this.getDisplayDate(post.time_created)
+        date: this.getDisplayDate(post.time_created),
+        categories: post.category // category is Category[] in post
       });
     }
   }
@@ -149,14 +141,3 @@ export class PostListComponent implements OnInit {
   }
 
 }
-
-@Component({
-  selector: 'last-page-snack',
-  templateUrl: 'last-page-snack.html',
-  styles: [`
-  .submitted {
-    color: white;
-  }
-`],
-})
-export class LastPageComponent { }

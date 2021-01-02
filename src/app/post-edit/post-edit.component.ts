@@ -1,6 +1,7 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, NgForm } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, NgForm } from '@angular/forms';
 import { MatSnackBar, MatSnackBarConfig, MatSnackBarRef } from '@angular/material/snack-bar';
+import { Category } from '../model-service/category/category';
 import { Post } from '../model-service/post/post';
 import { PostService } from '../model-service/post/post.service';
 
@@ -16,7 +17,9 @@ export class PostEditComponent implements OnInit {
    * captcha in the form
    */
 
+  allCategories: Category[] = Category.CATEGORIES;
   confessionForm: FormGroup;
+
   configSuccess: MatSnackBarConfig = {
     panelClass: "style-success",
     duration: 10000,
@@ -30,7 +33,10 @@ export class PostEditComponent implements OnInit {
 
   ngOnInit(): void {
     this.confessionForm = new FormGroup({
-      text: new FormControl('')
+      text: new FormControl("")
+    });
+    this.allCategories.forEach(category => {
+      this.confessionForm.addControl(category.name, new FormControl(false));
     });
   }
 
@@ -44,8 +50,9 @@ export class PostEditComponent implements OnInit {
       return;
     }
     const post = this.getPost();
+    console.log("postService.createPost with this post:", post);
     this.postService.createPost(post).subscribe();
-    this.confessionForm.reset();
+    this.reset();
     this.openSnackBar();
   }
 
@@ -56,8 +63,19 @@ export class PostEditComponent implements OnInit {
     post.text = text;
     post.likes = 0;
     post.time_created = new Date();
-    post.approved = false;  // TODO make sure is false for production
+    post.approved = true;  // TODO make sure is false for production
+    const categories: Category[] = [];
+    this.allCategories.forEach(category => {
+      if (this.confessionForm.controls[category.name].value) {
+        categories.push(category);
+      }
+    });
+    post.category = categories; // category is Category[] in post
     return post;
+  }
+
+  reset(): void {
+    this.confessionForm.reset();
   }
 
   openSnackBar(): void {

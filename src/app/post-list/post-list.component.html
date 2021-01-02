@@ -1,4 +1,4 @@
-<div id="Results" style="width: 95%; max-width: 750px;">
+<div *ngIf="cards.length > 0" style="width: 95%; max-width: 750px;" >
     <mat-list>
         <mat-card *ngFor="let card of cards" [routerLink]="['/home/post']"
             [queryParams]="{id: card.id}">
@@ -27,7 +27,7 @@
         <button mat-raised-button (click)="onNextClick()" [disabled]="isLastPage">Next</button>
     </div>
 </div>
-<div id="NoResult" hidden="true" style="margin: 28px;">
+<div *ngIf="cards.length==0" style="margin: 28px;">
     <p style="font-size: 20px;"><b>No results!</b></p>
     <br>
     <p>Suggestions:</p>

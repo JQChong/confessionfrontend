@@ -20,7 +20,6 @@
     cursor: pointer;
 }
 
-// TODO darken when hover (not working yet)
-.mat-card:hover>div {
-    background-color: rbga(0, 0, 0, 0.1);
+.mat-card:hover {
+    background-color: rgba(0, 0, 0, 0.001);
 }
