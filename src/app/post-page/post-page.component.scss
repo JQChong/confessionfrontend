@@ -1,12 +1,15 @@
+.main {
+    padding: 20px;
+}
+
+.smallScreen {
+    width: 84%
+}
+
 .navigation {
     display: flex; 
     justify-content: space-between; 
     padding: 20px;
-}
-
-.main {
-    width: 75%; 
-    padding:20px;
 }
 
 .content {
@@ -18,8 +21,18 @@
     padding: 10px;
 }
 
-.new-comment {
-    background-color: lightgrey;
+.comment {
+    background-color: #F5F5F5;
+    margin: 10px auto;
+    width: 80%;
     padding: 10px;
-    width: 100%;
+    border-radius: 5px;
+}
+
+a:hover {
+    color: #3f51b5;
+}
+
+.red {
+    color: red;
 }

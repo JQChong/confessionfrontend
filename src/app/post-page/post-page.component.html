@@ -1,42 +1,87 @@
-<div class="main">
+<div class="main" [class.smallScreen]="!bigScreen">
     <div class="navigation">
-        <button mat-button (click)="goPrevious()">
+        <button mat-button (click)="goPrevious(formDirective)">
             <mat-icon>navigate_before</mat-icon>Previous
         </button>
-        <button mat-button (click)="goNext()">
+        <button mat-button (click)="goNext(formDirective)">
             Next<mat-icon>navigate_next</mat-icon>
         </button>
     </div>
-    <div class="content">
-        <div class="post"> 
-            {{post.id}}
-            <br/>
-            {{post.time_created}}
-            <br/>
+    <mat-card class="content">
+        <mat-card-header>
+            <mat-card-title>{{'#' + post.id}}</mat-card-title>
+            <mat-card-subtitle>{{post.time_created | date:'dd LLLL yyyy, h:mm a'}}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content style="padding:0px 40px;">
             {{post.text}}
-            <br/>
-            {{post.likes}}
-            <br/>
-            <button mat-button (click)="updatePostLikes()">Like</button>
-        </div>
-        <div class="comments">
-            <mat-form-field class="new-comment">
-                <textarea #comment matInput placeholder="Write a comment..."></textarea>
-            </mat-form-field>
-            <button mat-button type="submit" (click)="createNewComment(comment.value)">Comment</button>
-            <div class="old-comments">
-                <div *ngFor="let comment of comments">
-                    {{comment.poster}}
+        </mat-card-content>
+        <mat-card-header>
+            <mat-card-subtitle>
+                {{post.likes === 1 ? post.likes + " Like" : post.likes + " Likes"}}
+                &middot;
+                {{comments.length === 1 ? comments.length + " Comment" : comments.length + " Comments"}}
+            </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-actions style="padding:10px 25px;">
+            <button mat-raised-button [color]="isPostLikeActive ? 'warn' : 'primary'" (click)="updatePostLikes()">LIKE</button>
+        </mat-card-actions>
+        <mat-card-content>
+            <div>
+                <form [formGroup]="commentForm" #formDirective="ngForm" class="comment">
+                    <mat-form-field floatLabel="never" style="padding:5px; width:98%;">
+                        <mat-label>Write a comment...</mat-label>
+                        <textarea matInput #text formControlName="text" [matAutocomplete]="auto"></textarea>
+                        <mat-autocomplete #auto="matAutocomplete">
+                            <mat-option *ngFor="let poster of filteredPosters | async" [value]="poster">
+                                {{poster}}
+                            </mat-option>
+                        </mat-autocomplete>
+                        <mat-error *ngIf="commentForm.get('text').errors?.required">This field is required</mat-error>
+                    </mat-form-field>
+                    <div>
+                        <mat-radio-group formControlName="poster">
+                            <mat-radio-button value="Anonymous" color="primary" style="padding:0px 10px;">
+                                Comment anonymously
+                            </mat-radio-button>
+                            <br>
+                            <mat-radio-button value="name.value" color="primary" style="padding:0px 10px;" #reveal>
+                                Reveal yourself as
+                                <mat-form-field floatLabel="never">
+                                    <mat-label>your name or nickname</mat-label>
+                                    <input type="text" matInput #name formControlName="name">
+                                    <mat-error *ngIf="commentForm.get('name').errors?.required">This field is required</mat-error>
+                                </mat-form-field>
+                            </mat-radio-button>
+                        </mat-radio-group>
+                        <span style="display:flex; justify-content:flex-end;">
+                            <button mat-raised-button type="submit" (click)="createNewComment(text.value, name.value, formDirective)" [disabled]="!commentForm.valid" style="height:35px;">
+                                Submit
+                            </button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+            <div class="comment" *ngFor="let comment of comments">
+                <div>
+                    <b>{{comment.poster}}</b>
                     <br>
                     {{comment.text}}
                     <br>
-                    {{comment.time_created}}
-                    <br>
-                    {{comment.likes}}
-                    <br/>
-                    <button mat-button (click)="updateCommentLikes(comment)">Like</button>
+                    <span style="display:flex; justify-content:space-between">
+                        <span style="color:	#808080;">
+                            {{comment.likes === 1 ? comment.likes + ' Like' : comment.likes + ' Likes'}}
+                            &middot;
+                            {{comment.time_created | date:'short'}}
+                        </span>
+                        <span [class.red]="isCommentLikeActive(comment.id)">
+                            <a style="cursor:pointer;" (click)="updateCommentLikes(comment)">Like</a>
+                        </span>
+                    </span>
                 </div>
             </div>
-        </div>
-    </div>
+            <span style="display:flex; justify-content:flex-end;">
+                <button mat-button *ngIf="hasNextPage" (click)="loadMoreComments()">See More...</button>
+            </span>
+        </mat-card-content>
+    </mat-card>
 </div>

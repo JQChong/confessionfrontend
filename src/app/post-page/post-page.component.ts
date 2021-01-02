@@ -1,10 +1,15 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { PostService } from '../model-service/post/post.service';
 import { CommentService } from '../model-service/comment/comment.service';
-import { Comment } from '../model-service/comment/comment'
+import { SubmitCommentComponent } from './submit-comment/submit-comment.component';
+import { Post } from '../model-service/post/post';
+import { Comment } from '../model-service/comment/comment';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { map, switchMap } from 'rxjs/operators';
-import { zip } from 'rxjs';
+import { map, switchMap, startWith } from 'rxjs/operators';
+import { Observable, zip } from 'rxjs';
+import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
+import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-post-page',
@@ -22,23 +27,65 @@ export class PostPageComponent implements OnInit {
    * 
    * Users should be able to navigate between the posts as well, i.e. to the previous or next post.
    * 
-   * addendum: error handling, e.g. what happens if the id > number of posts (well since we put it as
-   * a query param, ppl will mess around with it right?). i will subsequently make a simple error 404
-   * page, so u may want to take adv of that? also, u can pass in two functions in subscribe(), one
-   * is for normal operations, the other is for ______________ (find this out yourself lol).
+   * addendum 2: preferably, disable the navigation buttons if there are no previous or next posts.
+   * very not nice if i press previous post and then i get sent to 404 page haha
    */
 
-  post: any; // izit any?
-  comments: Comment[]; // izit any?
+  post: Post;
+  comments: Comment[];
+  commentForm: FormGroup;
+  numberOfApprovedPosts: number;
+  posters: string[];
+  filteredPosters: Observable<string[]>;
+  isPostLikeActive: Boolean = false;
+  bigScreen: Boolean;
+  nextPage: number = 2;
+  hasNextPage: Boolean = false;
+  postId: number;
 
   constructor(
     private _postService: PostService,
     private _commentService: CommentService,
-    private route: ActivatedRoute,
+    private _route: ActivatedRoute,
     private _router: Router,
+    private _fb: FormBuilder,
+    private _breakpointObserver: BreakpointObserver,
+    private _dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
+    this.reloadData();
+
+    this._breakpointObserver
+      .observe([Breakpoints.Small, Breakpoints.HandsetPortrait])
+      .subscribe((state: BreakpointState) => {
+        this.bigScreen = state.matches;
+      });
+
+    this.commentForm = this._fb.group({
+      text: ['', Validators.required],
+      poster: ['', Validators.required],
+      name: ['', '']
+    });
+    this.commentForm.get('name').disable();
+
+    this.commentForm.get('poster').valueChanges
+      .subscribe((data: string) => { this.onPosterOptionChange(data); });
+
+    this._postService.getPostByStatus()
+      .subscribe(data => { 
+        this.numberOfApprovedPosts = data.count;
+       });
+
+    this.filteredPosters = this.commentForm.get('text').valueChanges.pipe(
+      startWith(''),
+      map(value => value.includes('@') ? this.filter(value) : [])
+    );
+
+    this.isPostLikeActive = JSON.parse(localStorage.getItem(`p${this.postId}`));
+  }
+
+  reloadData() {
     // this is an antipattern. don't do this!!!
     /*this.route.queryParams.subscribe((params: Params) => {
       const postId = Number(params['id']);
@@ -47,49 +94,168 @@ export class PostPageComponent implements OnInit {
     });*/
 
     // do this!
-    this.route.queryParams.pipe(
+    this._route.queryParams.pipe(
       map(params => Number(params['id'])),
       switchMap((postId) => {
+        this.postId = postId;
         const post$ = this._postService.getPostById(postId)
         const comments$ = this._commentService.getCommentsByPost(postId)
 
         // combine and extract the data
         return zip(post$, comments$).pipe(map(([post, comments]) => ({ post, comments })));
       })
-    ).subscribe(({ post, comments }) => {
-      this.post = post;
-      this.comments = comments.results;
-    },
-    (err) => {
-      // fill in this part...
-      console.log(err);
-    })
+    ).subscribe(
+      ({ post, comments }) => {
+        if (post.approved) {
+          this.post = post;
+        } else {
+          this._router.navigate(['/pageNotFound']);
+        }
+        this.comments = comments.results;
+        this.setAnonymousId(this.comments);
+        this.hasNextPage = comments.next !== null ? true : false;
+        this.posters = this.getPosters();
+      },
+      (err) => {
+        this._router.navigate(['/pageNotFound']);
+        // console.log(err);
+      })
   }
 
-  goPrevious() {
-    let previousId = this.post.id - 1;
-    this._router.navigate(['home/post'], { queryParams: { id: previousId } }); // is the route correct?
+  nextPreviousReset(directives: FormGroupDirective, id: number) {
+    this.resetCommentForm(directives);
+    this.nextPage = 2;
+    this.hasNextPage = false;
+    this.isPostLikeActive = JSON.parse(localStorage.getItem(`p${id}`));
+    this.filteredPosters = this.commentForm.get('text').valueChanges.pipe(
+      startWith(''),
+      map(value => value.includes('@') ? this.filter(value) : [])
+    );
   }
 
-  goNext() {
-    let nextId = this.post.id + 1;
-    this._router.navigate(['home/post'], { queryParams: { id: nextId } }); // is the route correct?
+  goPrevious(directives: FormGroupDirective) {
+    let previousId = (this.post.id - 1) <= 0 ? this.numberOfApprovedPosts : this.post.id - 1;
+    this.nextPreviousReset(directives, previousId);
+    this._router.navigate(['./'],
+      {
+        relativeTo: this._route,
+        queryParams: { id: previousId }
+      });
+  }
+
+  goNext(directives: FormGroupDirective) {
+    let nextId = (this.post.id + 1) >= this.numberOfApprovedPosts ? 1 : this.post.id + 1;
+    this.nextPreviousReset(directives, nextId);
+    this._router.navigate(['./'],
+      {
+        relativeTo: this._route,
+        queryParams: { id: nextId }
+      });
+  }
+
+  updateLocalStorage(key: string, value: string) {
+    localStorage.removeItem(key);
+    localStorage.setItem(key, value);
   }
 
   updatePostLikes() {
-    this._postService.updateLikes(this.post.id, this.post.likes + 1).subscribe(); // subscribe need para?
+    if (this.isPostLikeActive) {
+      this._postService.updateLikes(this.post.id, this.post.likes - 1).subscribe();
+      this.post.likes--;
+      this.updateLocalStorage(`p${this.postId}`, JSON.stringify(!this.isPostLikeActive));
+      this.isPostLikeActive = JSON.parse(localStorage.getItem(`p${this.postId}`));
+    } else {
+      this._postService.updateLikes(this.post.id, this.post.likes + 1).subscribe();
+      this.post.likes++;
+      this.updateLocalStorage(`p${this.postId}`, JSON.stringify(!this.isPostLikeActive));
+      this.isPostLikeActive = JSON.parse(localStorage.getItem(`p${this.postId}`));
+    }
   }
 
   updateCommentLikes(comment: Comment) {
-    this._commentService.updateLikes(comment.id, comment.likes + 1).subscribe(); // subscribe need para?
+    let isCommentLikeActive = JSON.parse(localStorage.getItem(`c${comment.id}p${this.postId}`));
+    if (isCommentLikeActive) {
+      this._commentService.updateLikes(comment.id, comment.likes - 1).subscribe();
+      comment.likes--;
+      this.updateLocalStorage(`c${comment.id}p${this.postId}`, 'false');
+    } else {
+      this._commentService.updateLikes(comment.id, comment.likes + 1).subscribe();
+      comment.likes++;
+      this.updateLocalStorage(`c${comment.id}p${this.postId}`, 'true');
+    }
   }
 
-  createNewComment(text: string) {
+  createNewComment(text: string, poster: string, directives: FormGroupDirective) {
     const newComment = {
       post: this.post.id,
-      text: text
-    } // is tis how to create new comment?
-    this._commentService.createComment(newComment).subscribe(); // subscribe need para?
+      text: text,
+      poster: poster ? poster : 'Anonymous'
+    }
+    this._commentService.createComment(newComment)
+      .subscribe(() => { 
+        this._dialog.open(SubmitCommentComponent);
+        this.resetCommentForm(directives); });
   }
 
+  resetCommentForm(directives: FormGroupDirective) {
+    directives.resetForm();
+    this.commentForm.reset();
+  }
+
+  onPosterOptionChange(selectedValue: string) {
+    const name = this.commentForm.get('name');
+    if (selectedValue !== "Anonymous") {
+      name.setValidators(Validators.required);
+      name.enable();
+    } else {
+      name.clearValidators();
+      name.setValue('');
+      name.disable();
+    }
+    name.updateValueAndValidity();
+  }
+
+  getPosters(): string[] {
+    let res = [];
+    for (let i = 0; i < this.comments.length; i++) {
+      res.push(('@' + this.comments[i].poster));
+    }
+    return res;
+  }
+
+  filter(value: string): string[] {
+    console.log(value);
+    const filterValue = value.toLowerCase();
+    return this.posters.filter(
+      poster => poster.toLowerCase().includes(filterValue)
+    )
+  }
+
+  loadMoreComments() {
+    if (this.hasNextPage) {
+      this._commentService.getCommentsByPost(this.postId, this.nextPage)
+        .subscribe(comments => {
+          for (let comment of comments.results) {
+            this.comments.push(comment);
+          }
+          this.hasNextPage = comments.next !== null ? true : false;
+          this.nextPage++;
+          this.setAnonymousId(this.comments, (this.nextPage - 2) * 10 + 1);
+          this.posters = this.getPosters();
+        });
+    }
+  }
+
+  setAnonymousId(comments: Comment[], anonymousId: number = 1) {
+    for (let comment of comments) {
+      if (comment.poster === "Anonymous") {
+        comment.poster = 'Anonymous#' + anonymousId;
+        anonymousId++;
+      }
+    }
+  }
+
+  isCommentLikeActive(id: number) {
+    return JSON.parse(localStorage.getItem(`c${id}p${this.postId}`)) ? true : false;
+  }
 }

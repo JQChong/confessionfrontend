@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormControl, FormGroup, NgForm } from '@angular/forms';
+import { MatSnackBar, MatSnackBarConfig, MatSnackBarRef } from '@angular/material/snack-bar';
 import { Post } from '../model-service/post/post';
 import { PostService } from '../model-service/post/post.service';
 
@@ -17,6 +17,11 @@ export class PostEditComponent implements OnInit {
    */
 
   confessionForm: FormGroup;
+  configSuccess: MatSnackBarConfig = {
+    panelClass: "style-success",
+    duration: 10000,
+    verticalPosition: "bottom"
+  }
 
   constructor(
     private postService: PostService,
@@ -31,32 +36,33 @@ export class PostEditComponent implements OnInit {
 
   isPostValid(): boolean {
     const text = this.confessionForm.controls['text'].value;
-    return text.trim() == "";
+    return text.trim() != "";
   }
 
   onSubmit(): void {
-    const text = this.confessionForm.controls['text'].value;
-    if (text == "") {
+    if (!this.isPostValid()) {
       return;
     }
-    const post = this.getPost(text);
+    const post = this.getPost();
     this.postService.createPost(post).subscribe();
     this.confessionForm.reset();
     this.openSnackBar();
   }
 
-  getPost(text: string): Post {
+  getPost(): Post {
+    const text = this.confessionForm.controls['text'].value;
     const post = new Post();
     // post.id automatically increment by somewhere (idk where), will overwrite value here
     post.text = text;
     post.likes = 0;
     post.time_created = new Date();
-    post.approved = false;
+    post.approved = false;  // TODO make sure is false for production
     return post;
   }
 
   openSnackBar(): void {
     this.snackBar.openFromComponent(SubmittedComponent, {
+      ...this.configSuccess
     });
   }
 
@@ -71,4 +77,8 @@ export class PostEditComponent implements OnInit {
     }
   `],
 })
-export class SubmittedComponent { }
+export class SubmittedComponent {
+  constructor(
+    public snackBarRef: MatSnackBarRef<SubmittedComponent>
+  ) { }
+}
