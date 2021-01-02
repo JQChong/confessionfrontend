@@ -3,6 +3,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { CommentService } from '../model-service/comment/comment.service';
+import { Post } from '../model-service/post/post';
 import { PostService } from '../model-service/post/post.service';
 
 @Component({
@@ -35,6 +37,7 @@ export class PostListComponent implements OnInit {
 
   constructor(
     private postService: PostService,
+    private commentService: CommentService,
     private router: Router,
     private route: ActivatedRoute,
   ) { }
@@ -98,14 +101,28 @@ export class PostListComponent implements OnInit {
 
   populateCards(data: any): void {
     for (let post of data.results) {
-      this.cards.push({
-        id: post.id,
-        preview: this.getPreview(post.text),
-        likes: post.likes,
-        date: this.getDisplayDate(post.time_created),
-        categories: post.category // category is Category[] in post
-      });
+      this.getCommentsCountStr(post).subscribe(
+        commentsCountStr => {
+          this.cards.push({
+            id: post.id,
+            preview: this.getPreview(post.text),
+            likes: post.likes,
+            comments: commentsCountStr,
+            date: this.getDisplayDate(post.time_created),
+            categories: post.category
+          })
+        });
     }
+  }
+
+  getCommentsCountStr(post: Post): Observable<String> {
+    return this.commentService.getCommentsByPost(post.id).pipe(
+      switchMap(
+        comments => {
+          const commentsCount = comments.results.length;
+          return commentsCount >= 10 ? "10+" : String(commentsCount);
+        })
+    );
   }
 
   getPreview(text: string): string {
