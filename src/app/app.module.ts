@@ -24,6 +24,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ComponentBridgingService } from './model-service/componentbridging.service';
@@ -31,6 +33,7 @@ import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
 import { ClientLayoutComponent } from './client-layout/client-layout.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { SubmitCommentComponent } from './post-page/submit-comment/submit-comment.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +46,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     AdminPageComponent,
     AdminLayoutComponent,
     ClientLayoutComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    SubmitCommentComponent
   ],
   imports: [
     BrowserModule,
@@ -65,6 +69,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     FlexLayoutModule,
     MatTableModule,
     MatPaginatorModule,
+    MatRadioModule,
+    MatAutocompleteModule
   ],
   providers: [
     ComponentBridgingService
