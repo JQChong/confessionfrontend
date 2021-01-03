@@ -1,5 +1,5 @@
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from '../model-service/category/category';
 import { CategoryService } from '../model-service/category/category.service';
@@ -16,6 +16,10 @@ export class ClientLayoutComponent implements OnInit {
 
   categories: Category[]
 
+  thisYear: number;
+
+  bottomClass: string;
+
   constructor(
     private iconService: IconService,
     private breakpointObserver: BreakpointObserver,
@@ -23,6 +27,7 @@ export class ClientLayoutComponent implements OnInit {
     private router: Router
   ) {
     this.iconService.registerIcons('instagram', './assets/instagram.svg');
+    this.getScreenHeight();
   }
 
   ngOnInit(): void {
@@ -36,6 +41,16 @@ export class ClientLayoutComponent implements OnInit {
       (data: Category[]) => {
         this.categories = data;
       });
+    this.thisYear = new Date().getFullYear();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  getScreenHeight(event?){
+    if(window.innerHeight<=412){
+      this.bottomClass = 'bottomRelative';
+    }else{
+      this.bottomClass = 'bottomStick';
+    }
   }
 
   openSideNav() {
