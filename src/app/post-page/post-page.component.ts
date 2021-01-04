@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PostService } from '../model-service/post/post.service';
 import { CommentService } from '../model-service/comment/comment.service';
@@ -10,6 +10,7 @@ import { map, switchMap, startWith } from 'rxjs/operators';
 import { Observable, zip } from 'rxjs';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-post-page',
@@ -37,11 +38,13 @@ export class PostPageComponent implements OnInit {
   numberOfApprovedPosts: number;
   posters: string[];
   filteredPosters: Observable<string[]>;
-  isPostLikeActive: Boolean = false;
-  bigScreen: Boolean;
+  isPostLikeActive: boolean = false;
+  bigScreen: boolean;
   nextPage: number = 2;
-  hasNextPage: Boolean = false;
+  hasNextPage: boolean = false;
   postId: number;
+  isFirstPost: boolean;
+  isLastPost: boolean;
 
   constructor(
     private _postService: PostService,
@@ -75,6 +78,8 @@ export class PostPageComponent implements OnInit {
     this._postService.getPostByStatus()
       .subscribe(data => { 
         this.numberOfApprovedPosts = data.count;
+        this.isFirstPost = this.postId === 1;
+        this.isLastPost = this.postId === this.numberOfApprovedPosts;
        });
 
     this.filteredPosters = this.commentForm.get('text').valueChanges.pipe(
@@ -109,7 +114,7 @@ export class PostPageComponent implements OnInit {
         if (post.approved) {
           this.post = post;
         } else {
-          this._router.navigate(['/pageNotFound']);
+          this._router.navigate(['/home/404']);
         }
         this.comments = comments.results;
         this.setAnonymousId(this.comments);
@@ -117,7 +122,7 @@ export class PostPageComponent implements OnInit {
         this.posters = this.getPosters();
       },
       (err) => {
-        this._router.navigate(['/pageNotFound']);
+        this._router.navigate(['/home/404']);
         // console.log(err);
       })
   }
@@ -131,10 +136,13 @@ export class PostPageComponent implements OnInit {
       startWith(''),
       map(value => value.includes('@') ? this.filter(value) : [])
     );
+    this.isFirstPost = this.postId === 1;
+    this.isLastPost = this.postId === this.numberOfApprovedPosts;
   }
 
   goPrevious(directives: FormGroupDirective) {
-    let previousId = (this.post.id - 1) <= 0 ? this.numberOfApprovedPosts : this.post.id - 1;
+    let previousId = (this.post.id - 1) < 1 ? this.numberOfApprovedPosts : this.post.id - 1;
+    this.postId = previousId;
     this.nextPreviousReset(directives, previousId);
     this._router.navigate(['./'],
       {
@@ -144,7 +152,8 @@ export class PostPageComponent implements OnInit {
   }
 
   goNext(directives: FormGroupDirective) {
-    let nextId = (this.post.id + 1) >= this.numberOfApprovedPosts ? 1 : this.post.id + 1;
+    let nextId = (this.post.id + 1) > this.numberOfApprovedPosts ? 1 : this.post.id + 1;
+    this.postId = nextId;
     this.nextPreviousReset(directives, nextId);
     this._router.navigate(['./'],
       {

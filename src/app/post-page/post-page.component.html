@@ -1,9 +1,9 @@
 <div class="main" [class.smallScreen]="!bigScreen">
     <div class="navigation">
-        <button mat-button (click)="goPrevious(formDirective)">
+        <button mat-button (click)="goPrevious(formDirective)" [disabled]="isFirstPost">
             <mat-icon>navigate_before</mat-icon>Previous
         </button>
-        <button mat-button (click)="goNext(formDirective)">
+        <button mat-button (click)="goNext(formDirective)" [disabled]="isLastPost">
             Next<mat-icon>navigate_next</mat-icon>
         </button>
     </div>
