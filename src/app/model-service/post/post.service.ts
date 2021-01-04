@@ -12,7 +12,7 @@ export class PostService {
   constructor(
     private httpClient: HttpClient,
     private baseService: BaseService
-  ) {}
+  ) { }
 
   // when url is confirmed, this needs to be moved to environment
   private baseUrlPosts = 'http://localhost:8000/api/posts';
@@ -31,14 +31,12 @@ export class PostService {
 
   sortPosts(
     order_by: string,
-    status: string = 'True',
-    page: number = 1
+    search: string = "",
+    page: number = 1,
+    status: string = 'True'
   ): Observable<any> {
-    return this.baseService.getObjectByParams(this.baseUrlPosts, {
-      order_by,
-      page,
-      approved: status,
-    });
+    let params = { order_by, page, approved: status, search };
+    return this.baseService.getObjectByParams(this.baseUrlPosts, params);
   }
 
   filterByCategory(
@@ -83,7 +81,7 @@ export class PostDataSource implements DataSource<Post> {
   public loading$ = this.loadingSubject.asObservable();
   public length$ = this.postsLength.asObservable()
 
-  constructor(private postService: PostService) {}
+  constructor(private postService: PostService) { }
 
   connect(collectionViewer: CollectionViewer): Observable<Post[]> {
     return this.postsSubject.asObservable();

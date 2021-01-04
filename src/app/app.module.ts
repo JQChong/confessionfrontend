@@ -29,6 +29,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatRippleModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ComponentBridgingService } from './model-service/componentbridging.service';
@@ -74,7 +75,8 @@ import { SubmitCommentComponent } from './post-page/submit-comment/submit-commen
     MatProgressSpinnerModule,
     MatRadioModule,
     MatAutocompleteModule,
-    MatRippleModule
+    MatRippleModule,
+    MatSelectModule
   ],
   providers: [ComponentBridgingService],
   bootstrap: [AppComponent],

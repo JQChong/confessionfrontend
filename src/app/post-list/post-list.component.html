@@ -1,7 +1,18 @@
 <div *ngIf="cards.length > 0" style="width: 95%; margin: auto;">
-    <mat-list>
-        <mat-card *ngFor="let card of cards" [routerLink]="['/home/post']"
-            [queryParams]="{id: card.id}" style="margin: 15px;">
+    <div class="paginator">
+        <span>Sort by: </span>
+        <mat-form-field>
+            <mat-select [formControl]="sortCriterion" (selectionChange)="resortList()">
+                <mat-option value="-time_created">Latest</mat-option>
+                <mat-option value="popular">Popular</mat-option>
+                <mat-option value="-likes">Likes</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <br>
+    <mat-list style="margin-top: 15px;">
+        <mat-card *ngFor="let card of cards" [routerLink]="['/home/post']" [queryParams]="{id: card.id}"
+            style="margin: 15px;">
             <mat-card-header>
                 <mat-card-title><strong>#{{ card.id }}</strong></mat-card-title>
             </mat-card-header>
@@ -21,8 +32,7 @@
     <!-- mat-paginator needs all data -->
     <!-- so create custom "paginator" -->
     <div class="paginator">
-        <button mat-raised-button (click)="onPreviousClick()"
-            [disabled]="isFirstPage">Previous</button>
+        <button mat-raised-button (click)="onPreviousClick()" [disabled]="isFirstPage">Previous</button>
         <span>Page {{ page }}</span>
         <button mat-raised-button (click)="onNextClick()" [disabled]="isLastPage">Next</button>
     </div>

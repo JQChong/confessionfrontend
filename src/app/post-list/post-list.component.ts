@@ -1,5 +1,6 @@
 import { formatDate } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -32,6 +33,9 @@ export class PostListComponent implements OnInit {
   page = 1;
   isFirstPage = false;
   isLastPage = false;
+
+  sortCriterion = new FormControl('-time_created');
+  validOptions = ['-time_created', 'popular', '-likes']
 
   constructor(
     private postService: PostService,
@@ -91,9 +95,21 @@ export class PostListComponent implements OnInit {
     this.search = !this.search ? "" : String(this.search);
     this.page = params["page"];
     this.page = !this.page ? 1 : Number(this.page);
+    let sort = params["order_by"];
+    sort = this.validOptions.includes(sort) ? sort : '-time_created';
+    this.sortCriterion.setValue(sort);
     console.log("search:", this.search, "page:", this.page);
-    const posts = this.postService.searchPosts(this.search, this.page);
+    const posts = this.postService.sortPosts(sort, this.search, this.page);
     return posts;
+  }
+
+  resortList(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { order_by: this.sortCriterion.value },
+      queryParamsHandling: 'merge',
+      skipLocationChange: true
+    })
   }
 
   populateCards(data: any): void {
@@ -132,12 +148,22 @@ export class PostListComponent implements OnInit {
       return;
     }
     this.page -= 1;
-    this.router.navigate(["/home"], { queryParams: { search: this.search, page: this.page } });
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: this.page },
+      queryParamsHandling: 'merge',
+      skipLocationChange: true
+    });
   }
 
   onNextClick(): void {
     this.page += 1;
-    this.router.navigate(["/home"], { queryParams: { search: this.search, page: this.page } });
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: this.page },
+      queryParamsHandling: 'merge',
+      skipLocationChange: true
+    });
   }
 
 }
