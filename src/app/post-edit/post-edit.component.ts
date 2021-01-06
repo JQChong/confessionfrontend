@@ -68,7 +68,7 @@ export class PostEditComponent implements OnInit {
     post.text = text;
     post.likes = 0;
     post.time_created = new Date();
-    post.approved = true;  // TODO make sure is false for production
+    post.approved = false;  // TODO make sure is false for production
     const categories = [];
     for (let i = 0; i < this.allCategories.length; i++) {
       const category = this.allCategories[i];
