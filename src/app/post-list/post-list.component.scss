@@ -10,11 +10,13 @@
 }
 
 .paginator {
-    float: right;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
 }
 
 .paginator>* {
-    margin: 5px;
+    margin: 16px;
 }
 
 .mat-card {

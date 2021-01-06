@@ -28,14 +28,17 @@
     <!-- can only query specific page of posts -->
     <!-- mat-paginator needs all data -->
     <!-- so create custom "paginator" -->
-    <div class="paginator">
-        <button mat-raised-button (click)="onPreviousClick()"
-            [disabled]="isFirstPage">Previous</button>
+    <div class="paginator same-line">
+        <button mat-button (click)="onPreviousClick()" [disabled]="isFirstPage">
+            <mat-icon>navigate_before</mat-icon>Previous
+        </button>
         <span>Page {{ page }}</span>
-        <button mat-raised-button (click)="onNextClick()" [disabled]="isLastPage">Next</button>
+        <button mat-button (click)="onNextClick()" [disabled]="isLastPage">
+            Next<mat-icon>navigate_next</mat-icon>
+        </button>
     </div>
 </div>
-<div *ngIf="cards.length==0" style="margin: 28px;">
+<div *ngIf=" cards.length==0" style="margin: 28px;">
     <p style="font-size: 20px;"><b>No results!</b></p>
     <br>
     <p>Suggestions:</p>
