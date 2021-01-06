@@ -11,7 +11,8 @@
                 <div class="same-line">
                     <mat-chip-list>
                         <!-- TODO route to categories page if clicked -->
-                        <mat-chip *ngFor="let category of card.categories">
+                        <mat-chip *ngFor="let category of card.categories" [routerLink]="['/home']"
+                            [queryParams]="{category: category.name}">
                             {{ category.name }}
                         </mat-chip>
                     </mat-chip-list>
@@ -32,7 +33,7 @@
         <button mat-button (click)="onPreviousClick()" [disabled]="isFirstPage">
             <mat-icon>navigate_before</mat-icon>Previous
         </button>
-        <span>Page {{ page }}</span>
+        <span>Page {{ this.getPage() }}</span>
         <button mat-button (click)="onNextClick()" [disabled]="isLastPage">
             Next<mat-icon>navigate_next</mat-icon>
         </button>
@@ -43,8 +44,8 @@
     <br>
     <p>Suggestions:</p>
     <ul>
-        <li>Make sure that all words are spelled as intended.</li>
-        <li>Try more general keywords.</li>
-        <li>Try incomplete keywords (e.g. keywor).</li>
+        <li>Try searching for more general keywords.</li>
+        <li>Try searching for incomplete keywords (e.g. keywor).</li>
+        <li>Try refreshing the page (if you haven't done so).</li>
     </ul>
 </div>
