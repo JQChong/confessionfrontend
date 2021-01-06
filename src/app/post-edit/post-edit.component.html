@@ -1,31 +1,30 @@
-<div style="margin: 24px;">
-    <h1>Confess!</h1>
-    <p>
-        Have something you wanted to say for a long time? Say it here! No one will know who you are.
-        <br>
-        Please remember to be socially responsible. No racial, religious or other forms of sensitive
-        material.
-        <br>
-        Happy confessing!
-    </p>
-    <section>
+<mat-card style="margin: 24px;">
+    <mat-card-header>
+        <mat-card-title>Confess!</mat-card-title>
+        <mat-card-subtitle>
+            Have something you wanted to say for a long time?
+            Say it here! No one will know who you are.
+            Please do not post any racial, religious or other forms of sensitive material.
+            Happy confessing!
+        </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content align="end">
         <form [formGroup]="confessionForm" (ngSubmit)="onSubmit()">
-            <mat-form-field style="width:90%; max-width:750px;">
+            <mat-form-field style="width: 100%;">
                 <textarea matNativeControl rows="6" matInput formControlName="text"
                     placeholder="Your Confession"></textarea>
             </mat-form-field>
             <br>
-            Categories:
-            <label *ngFor="let category of allCategories; let i = index ">
-                <input type="checkbox" formControlName="{{ category.name }}">
-                {{ category.name }}
-            </label>
+            <div>
+                <mat-checkbox *ngFor="let category of allCategories"
+                    formControlName="{{ category.name }}" color="primary">{{ category.name }}
+                </mat-checkbox>
+            </div>
             <br>
             <br>
             <button id="submitBtn" mat-raised-button
                 [disabled]="!confessionForm.dirty || !confessionForm.valid || !isPostValid()"
                 type="submit">Submit</button>
         </form>
-    </section>
-</div>
-<!-- TODO try mat-checkbox, rmb to restart server -->
+    </mat-card-content>
+</mat-card>

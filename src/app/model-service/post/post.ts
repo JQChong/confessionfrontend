@@ -1,8 +1,3 @@
-// TODO how to get category?
-
-import { Category } from "../category/category";
-
-// TODO how to get number of comments?
 export class Post {
     id!: number; // to be loaded
     text!: string; // to be loaded

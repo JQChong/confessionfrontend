@@ -47,7 +47,7 @@ export class PostEditComponent implements OnInit {
 
   isPostValid(): boolean {
     const text = this.confessionForm.controls['text'].value;
-    return text.trim() != "";
+    return text != null && text.trim() != "";
   }
 
   onSubmit(): void {
