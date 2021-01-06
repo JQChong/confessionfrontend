@@ -28,6 +28,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatRippleModule } from '@angular/material/core';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ComponentBridgingService } from './model-service/componentbridging.service';
@@ -72,7 +73,8 @@ import { SubmitCommentComponent } from './post-page/submit-comment/submit-commen
     MatPaginatorModule,
     MatProgressSpinnerModule,
     MatRadioModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatRippleModule
   ],
   providers: [ComponentBridgingService],
   bootstrap: [AppComponent],

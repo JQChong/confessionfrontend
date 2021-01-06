@@ -5,7 +5,7 @@ import { CommentService } from '../model-service/comment/comment.service';
 import { SubmitCommentComponent } from './submit-comment/submit-comment.component';
 import { Post } from '../model-service/post/post';
 import { Comment } from '../model-service/comment/comment';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { map, switchMap, startWith } from 'rxjs/operators';
 import { Observable, zip } from 'rxjs';
 import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
@@ -34,14 +34,15 @@ export class PostPageComponent implements OnInit {
   post: Post;
   comments: Comment[];
   commentForm: FormGroup;
-  numberOfApprovedPosts: number;
   posters: string[];
   filteredPosters: Observable<string[]>;
-  isPostLikeActive: Boolean = false;
-  bigScreen: Boolean;
+  isPostLikeActive: boolean = false;
+  bigScreen: boolean;
   nextPage: number = 2;
-  hasNextPage: Boolean = false;
+  hasNextPage: boolean = false;
   postId: number;
+  prevId: number;
+  nextId: number;
 
   constructor(
     private _postService: PostService,
@@ -72,11 +73,6 @@ export class PostPageComponent implements OnInit {
     this.commentForm.get('poster').valueChanges
       .subscribe((data: string) => { this.onPosterOptionChange(data); });
 
-    this._postService.getPostByStatus()
-      .subscribe(data => { 
-        this.numberOfApprovedPosts = data.count;
-       });
-
     this.filteredPosters = this.commentForm.get('text').valueChanges.pipe(
       startWith(''),
       map(value => value.includes('@') ? this.filter(value) : [])
@@ -106,8 +102,11 @@ export class PostPageComponent implements OnInit {
       })
     ).subscribe(
       ({ post, comments }) => {
-        if (post.approved) {
-          this.post = post;
+        let currentPost = post.data
+        if (currentPost.approved) {
+          this.post = currentPost;
+          this.prevId = post.prev_id;
+          this.nextId = post.next_id;
         } else {
           this._router.navigate(['/pageNotFound']);
         }
@@ -134,22 +133,20 @@ export class PostPageComponent implements OnInit {
   }
 
   goPrevious(directives: FormGroupDirective) {
-    let previousId = (this.post.id - 1) <= 0 ? this.numberOfApprovedPosts : this.post.id - 1;
-    this.nextPreviousReset(directives, previousId);
+    this.nextPreviousReset(directives, this.prevId);
     this._router.navigate(['./'],
       {
         relativeTo: this._route,
-        queryParams: { id: previousId }
+        queryParams: { id: this.prevId }
       });
   }
 
   goNext(directives: FormGroupDirective) {
-    let nextId = (this.post.id + 1) >= this.numberOfApprovedPosts ? 1 : this.post.id + 1;
-    this.nextPreviousReset(directives, nextId);
+    this.nextPreviousReset(directives, this.nextId);
     this._router.navigate(['./'],
       {
         relativeTo: this._route,
-        queryParams: { id: nextId }
+        queryParams: { id: this.nextId }
       });
   }
 

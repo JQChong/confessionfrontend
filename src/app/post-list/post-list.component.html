@@ -1,7 +1,7 @@
-<div *ngIf="cards.length > 0" style="width: 95%; max-width: 750px;" >
+<div *ngIf="cards.length > 0" style="width: 95%; margin: auto;">
     <mat-list>
         <mat-card *ngFor="let card of cards" [routerLink]="['/home/post']"
-            [queryParams]="{id: card.id}">
+            [queryParams]="{id: card.id}" style="margin: 15px;">
             <mat-card-header>
                 <mat-card-title><strong>#{{ card.id }}</strong></mat-card-title>
             </mat-card-header>

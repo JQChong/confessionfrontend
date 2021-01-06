@@ -6,6 +6,7 @@
 .reaction-summary {
     position: absolute;
     right   : 20px;
+    color: #959595;
 }
 
 .paginator {
@@ -22,4 +23,5 @@
 
 .mat-card:hover {
     background-color: rgba(0, 0, 0, 0.001);
+    transition: all 0.5s;
 }

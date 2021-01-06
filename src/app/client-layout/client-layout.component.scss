@@ -2,6 +2,15 @@
     color: #555555;
 }
 
-mat-sidenav{
-    width: 12.5%;
+.longSearchBar{
+    width: 300%;
+}
+
+.bottomStick {
+    position: absolute;
+    bottom:1%;
+}
+
+.bottomRelative {
+    position: relative;
 }
