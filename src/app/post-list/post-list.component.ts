@@ -108,7 +108,7 @@ export class PostListComponent implements OnInit {
             preview: this.getPreview(post.text),
             likes: post.likes,
             comments: commentsCountStr,
-            date: this.getDisplayDate(post.time_created),
+            date: post.time_created,
             categories: post.category
           })
         });
@@ -132,12 +132,6 @@ export class PostListComponent implements OnInit {
     } else {
       return text.slice(0, maxPreviewLength) + " ...";
     }
-  }
-
-  getDisplayDate(date: Date): string {
-    const format = 'dd/MM/yyyy';
-    const locale = 'en-US';
-    return formatDate(date, format, locale);
   }
 
   routeToPost(id: number): void {

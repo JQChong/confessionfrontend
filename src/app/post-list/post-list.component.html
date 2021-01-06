@@ -4,7 +4,7 @@
             [queryParams]="{id: card.id}" style="margin: 15px;">
             <mat-card-header class="same-line">
                 <mat-card-title><strong>#{{ card.id }}</strong></mat-card-title>
-                <mat-card-subtitle>{{ card.date }}</mat-card-subtitle>
+                <mat-card-subtitle>{{ card.date | date:'dd LLLL yyyy, h:mm a' }}</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
                 <div style="margin-bottom: 20px">{{ card.preview }}</div>
