@@ -16,8 +16,8 @@
             </mat-form-field>
             <br>
             Categories:
-            <label *ngFor="let category of allCategories">
-                <input type="checkbox" [formControlName]="category.name" [value]="category">
+            <label *ngFor="let category of allCategories; let i = index ">
+                <input type="checkbox" formControlName="{{ category.name }}">
                 {{ category.name }}
             </label>
             <br>
@@ -28,3 +28,4 @@
         </form>
     </section>
 </div>
+<!-- TODO try mat-checkbox, rmb to restart server -->

@@ -9,5 +9,5 @@ export class Post {
     likes!: number; // to be loaded
     time_created!: Date; // to be loaded
     approved!: boolean;
-    category!: Category[];
+    category!: Number[];
 }
