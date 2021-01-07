@@ -1,5 +1,5 @@
 <mat-card style="margin: 24px;">
-    <mat-card-header>
+    <mat-card-header style="margin-top:12px;">
         <mat-card-title>Confess!</mat-card-title>
         <mat-card-subtitle>
             Have something you wanted to say for a long time?
@@ -8,7 +8,7 @@
             Happy confessing!
         </mat-card-subtitle>
     </mat-card-header>
-    <mat-card-content style="padding-left: 17px;">
+    <mat-card-content style="padding-left: 17px; padding-right: 20px;">
         <form [formGroup]="confessionForm" (ngSubmit)="onSubmit()">
             <mat-form-field style="width: 100%;">
                 <textarea matNativeControl rows="6" matInput formControlName="text"

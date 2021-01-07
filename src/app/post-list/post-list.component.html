@@ -6,7 +6,7 @@
                 <mat-card-title><strong>#{{ card.id }}</strong></mat-card-title>
                 <mat-card-subtitle>{{ card.date | date:'dd LLLL yyyy, h:mm a' }}</mat-card-subtitle>
             </mat-card-header>
-            <mat-card-content>
+            <mat-card-content style="margin-left: 17px;">
                 <div style="margin-bottom: 20px">{{ card.preview }}</div>
                 <div class="same-line">
                     <mat-chip-list>
@@ -15,6 +15,7 @@
                             {{ category.name }}
                         </mat-chip>
                     </mat-chip-list>
+                    <span class="fill-remaining-space"></span>
                     <div class="same-line reaction-summary">
                         <span class="material-icons" style="margin: 4px;">thumb_up</span>
                         <span style="margin-right: 8px;">{{ card.likes }}</span>
