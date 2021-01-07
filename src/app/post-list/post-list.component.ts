@@ -4,7 +4,6 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { CategoryService } from '../model-service/category/category.service';
-import { CommentService } from '../model-service/comment/comment.service';
 import { PostService } from '../model-service/post/post.service';
 
 @Component({

@@ -45,10 +45,10 @@ export class ClientLayoutComponent implements OnInit {
   }
 
   @HostListener('window:resize', ['$event'])
-  getScreenHeight(event?){
-    if(window.innerHeight<=412){
+  getScreenHeight(event?) {
+    if (window.innerHeight <= 412) {
       this.bottomClass = 'bottomRelative';
-    }else{
+    } else {
       this.bottomClass = 'bottomStick';
     }
   }
@@ -72,4 +72,5 @@ export class ClientLayoutComponent implements OnInit {
       this.router.navigate(['home']);
     }
   }
+
 }
