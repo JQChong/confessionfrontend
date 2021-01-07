@@ -8,7 +8,7 @@
             Happy confessing!
         </mat-card-subtitle>
     </mat-card-header>
-    <mat-card-content align="end">
+    <mat-card-content style="padding-left: 17px;">
         <form [formGroup]="confessionForm" (ngSubmit)="onSubmit()">
             <mat-form-field style="width: 100%;">
                 <textarea matNativeControl rows="6" matInput formControlName="text"
@@ -16,15 +16,18 @@
             </mat-form-field>
             <br>
             <div>
-                <mat-checkbox *ngFor="let category of allCategories"
-                    formControlName="{{ category.name }}" color="primary">{{ category.name }}
+                <h3>Pick a Category</h3>
+                <mat-checkbox *ngFor="let category of allCategories" formControlName="{{ category.name }}"
+                    color="primary">{{ category.name }}
                 </mat-checkbox>
             </div>
             <br>
             <br>
-            <button id="submitBtn" mat-raised-button
-                [disabled]="!confessionForm.dirty || !confessionForm.valid || !isPostValid()"
-                type="submit">Submit</button>
+            <mat-card-actions align="end">
+                <button id="submitBtn" mat-raised-button
+                    [disabled]="!confessionForm.dirty || !confessionForm.valid || !isPostValid()"
+                    type="submit">Submit</button>
+            </mat-card-actions>
         </form>
     </mat-card-content>
 </mat-card>

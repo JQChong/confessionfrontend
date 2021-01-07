@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { CategoryService } from '../model-service/category/category.service';
 import { CommentService } from '../model-service/comment/comment.service';
-import { Post } from '../model-service/post/post';
 import { PostService } from '../model-service/post/post.service';
 
 @Component({
@@ -39,7 +38,6 @@ export class PostListComponent implements OnInit {
   constructor(
     private postService: PostService,
     private categoryService: CategoryService,
-    private commentService: CommentService,
     private router: Router,
     private route: ActivatedRoute,
   ) { }
@@ -51,13 +49,13 @@ export class PostListComponent implements OnInit {
   loadPage(): void {
     this.route.queryParams.pipe(
       switchMap(queryParams => {
-        console.log("query:", queryParams);
+        // console.log("query:", queryParams);
         this.queryParams = JSON.parse(JSON.stringify(queryParams)); // make editable clone
         return this.handleQuery();
       })
     ).subscribe(
       data => {
-        console.log("data:", data);
+        // console.log("data:", data);
         this.data = data;
         this.cards = [];
         this.updateIsFirstPage();
@@ -93,17 +91,14 @@ export class PostListComponent implements OnInit {
 
   populateCards(): void {
     for (let post of this.data.results) {
-      this.getCommentsCountStr(post).subscribe(
-        commentsCountStr => {
-          this.cards.push({
-            id: post.id,
-            preview: this.getPreview(post.text),
-            likes: post.likes,
-            comments: commentsCountStr,
-            date: post.time_created,
-            categories: post.category
-          })
-        });
+      this.cards.push({
+        id: post.id,
+        preview: this.getPreview(post.text),
+        likes: post.likes,
+        comments: post.num_comments,
+        date: post.time_created,
+        categories: post.category
+      })
     }
   }
 
@@ -123,16 +118,6 @@ export class PostListComponent implements OnInit {
   getPage(): number {
     const page = Number(this.queryParams["page"]);
     return page ? page : 1;
-  }
-
-  getCommentsCountStr(post: Post): Observable<String> {
-    return this.commentService.getCommentsByPost(post.id).pipe(
-      switchMap(
-        comments => {
-          const commentsCount = comments.results.length;
-          return commentsCount >= 10 ? "10+" : String(commentsCount);
-        })
-    );
   }
 
   getPreview(text: string): string {
