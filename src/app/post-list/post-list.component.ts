@@ -1,8 +1,9 @@
-import { formatDate } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
+import { CategoryService } from '../model-service/category/category.service';
+import { CommentService } from '../model-service/comment/comment.service';
 import { PostService } from '../model-service/post/post.service';
 
 @Component({
@@ -27,14 +28,16 @@ export class PostListComponent implements OnInit {
    * the query parameters.
   */
 
+  queryParams: Params;
+  data: any;
   cards = [];
-  search = "";
-  page = 1;
+  private readonly postPerPage = 10;
   isFirstPage = false;
   isLastPage = false;
 
   constructor(
     private postService: PostService,
+    private categoryService: CategoryService,
     private router: Router,
     private route: ActivatedRoute,
   ) { }
@@ -45,67 +48,76 @@ export class PostListComponent implements OnInit {
 
   loadPage(): void {
     this.route.queryParams.pipe(
-      switchMap(params => {
-        return this.handleQuery(params);
+      switchMap(queryParams => {
+        // console.log("query:", queryParams);
+        this.queryParams = JSON.parse(JSON.stringify(queryParams)); // make editable clone
+        return this.handleQuery();
       })
     ).subscribe(
       data => {
-        console.log(data.results);
+        // console.log("data:", data);
+        this.data = data;
         this.cards = [];
         this.updateIsFirstPage();
         this.updateIsLastPage();
-        if (data.results.length > 0) {
-          this.populateCards(data);
+        if (this.data.results.length > 0) {
+          this.populateCards();
         }
       },
       error => {
         console.log(error);
-        // give time for back navigation, might need better way
-        setTimeout(() => { this.router.navigate(["/home/404"]); }, 1000);
+        // just leave it as no results
       }
     );
+  }
+
+  handleQuery(): Observable<any> {
+    if (this.queryParams["search"]) {
+      return this.handleSearch();
+    } else if (this.queryParams["category"]) {
+      return this.handleCategory();
+    } else {
+      return this.postService.getPostByStatus("True", this.getPage());
+    }
   }
 
   updateIsFirstPage(): void {
-    this.isFirstPage = this.page === 1;
+    this.isFirstPage = this.getPage() == 1;
   }
 
   updateIsLastPage(): void {
-    this.postService.searchPosts(this.search, this.page + 1).subscribe(
-      data => {
-        this.isLastPage = false // next page has data means not last page
-      },
-      error => {
-        if (error['status'] == 404) {
-          this.isLastPage = true; // next page not available, means already last page
-        } else {
-          console.log(error);
-        }
-      }
-    );
+    this.isLastPage = this.getPage() * this.postPerPage >= this.data.count;
   }
 
-  handleQuery(params: Params): Observable<any> {
-    console.log(params);
-    this.search = params["search"];
-    this.search = !this.search ? "" : String(this.search);
-    this.page = params["page"];
-    this.page = !this.page ? 1 : Number(this.page);
-    console.log("search:", this.search, "page:", this.page);
-    const posts = this.postService.searchPosts(this.search, this.page);
-    return posts;
-  }
-
-  populateCards(data: any): void {
-    for (let post of data.results) {
+  populateCards(): void {
+    for (let post of this.data.results) {
       this.cards.push({
         id: post.id,
         preview: this.getPreview(post.text),
         likes: post.likes,
-        date: this.getDisplayDate(post.time_created),
-        categories: post.category // category is Category[] in post
-      });
+        comments: post.num_comments,
+        date: post.time_created,
+        categories: post.category
+      })
     }
+  }
+
+  handleSearch(): Observable<any> {
+    const search = this.queryParams["search"];
+    return this.postService.searchPosts(search, this.getPage());
+  }
+
+  handleCategory(): Observable<any> {
+    return this.getCategoryId().pipe(
+      switchMap(id => {
+        return this.postService.filterByCategory(String(id), "", this.getPage());
+      })
+    );
+  }
+
+  getPage(): number {
+    const page = Number(this.queryParams["page"]);
+    return page ? page : 1;
   }
 
   getPreview(text: string): string {
@@ -117,10 +129,19 @@ export class PostListComponent implements OnInit {
     }
   }
 
-  getDisplayDate(date: Date): string {
-    const format = 'dd/MM/yyyy';
-    const locale = 'en-US';
-    return formatDate(date, format, locale);
+  getCategoryId(): Observable<number> {
+    const thisCategory = this.queryParams["category"];
+    return this.categoryService.getCategories().pipe(
+      map(categories => {
+        for (let i = 0; i < categories.length; i++) {
+          const category = categories[i];
+          if (category.name == thisCategory) {
+            return i + 1;
+          }
+        }
+        return 0;
+      })
+    );
   }
 
   routeToPost(id: number): void {
@@ -128,16 +149,22 @@ export class PostListComponent implements OnInit {
   }
 
   onPreviousClick(): void {
-    if (this.page == 1) {
-      return;
+    const page = Number(this.queryParams["page"]);
+    if (page && page > 1) {
+      this.queryParams["page"] = page - 1;
+      this.router.navigate(["/home"], { queryParams: this.queryParams });
     }
-    this.page -= 1;
-    this.router.navigate(["/home"], { queryParams: { search: this.search, page: this.page } });
   }
 
   onNextClick(): void {
-    this.page += 1;
-    this.router.navigate(["/home"], { queryParams: { search: this.search, page: this.page } });
+    let page = Number(this.queryParams["page"]);
+    if (!page) {
+      page = 1;
+    }
+    if (!this.isLastPage) {
+      this.queryParams["page"] = page + 1;
+      this.router.navigate(["/home"], { queryParams: this.queryParams });
+    }
   }
 
 }
