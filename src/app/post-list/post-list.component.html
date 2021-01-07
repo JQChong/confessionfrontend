@@ -1,7 +1,19 @@
 <div *ngIf="cards.length > 0" style="width: 95%; margin: auto;">
+    <div style="float: right; margin-right: 15px;">
+        <span>Sort by: </span>
+        <mat-form-field>
+            <mat-select [formControl]="sortCriterion" (selectionChange)="sortList()">
+                <mat-option value="-time_created">Latest</mat-option>
+                <mat-option value="popular">Popular</mat-option>
+                <mat-option value="-likes">Likes</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <br>
+    <br>
     <mat-list>
-        <mat-card *ngFor="let card of cards" [routerLink]="['/home/post']"
-            [queryParams]="{id: card.id}" style="margin: 15px;">
+        <mat-card *ngFor="let card of cards" [routerLink]="['/home/post']" [queryParams]="{id: card.id}"
+            style="margin: 15px;">
             <mat-card-header class="same-line">
                 <mat-card-title><strong>#{{ card.id }}</strong></mat-card-title>
                 <mat-card-subtitle>{{ card.date | date:'dd LLLL yyyy, h:mm a' }}</mat-card-subtitle>

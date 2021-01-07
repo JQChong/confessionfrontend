@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
@@ -34,6 +35,9 @@ export class PostListComponent implements OnInit {
   private readonly postPerPage = 10;
   isFirstPage = false;
   isLastPage = false;
+
+  sortCriterion = new FormControl('-time_created');
+  validOptions = ['-time_created', 'popular', '-likes'];
 
   constructor(
     private postService: PostService,
@@ -72,12 +76,18 @@ export class PostListComponent implements OnInit {
   }
 
   handleQuery(): Observable<any> {
+    let order_by = this.queryParams["order_by"];
+    if (!this.validOptions.includes(order_by)) {
+      order_by = '-time_created';
+    }
+    this.sortCriterion.setValue(order_by);
+
     if (this.queryParams["search"]) {
-      return this.handleSearch();
+      return this.handleSearch(order_by);
     } else if (this.queryParams["category"]) {
-      return this.handleCategory();
+      return this.handleCategory(order_by);
     } else {
-      return this.postService.getPostByStatus("True", this.getPage());
+      return this.postService.sortPosts(order_by, "", this.getPage());
     }
   }
 
@@ -102,17 +112,26 @@ export class PostListComponent implements OnInit {
     }
   }
 
-  handleSearch(): Observable<any> {
+  handleSearch(order_by: string): Observable<any> {
     const search = this.queryParams["search"];
-    return this.postService.searchPosts(search, this.getPage());
+    return this.postService.sortPosts(order_by, search, this.getPage());
   }
 
-  handleCategory(): Observable<any> {
+  handleCategory(order_by: string): Observable<any> {
     return this.getCategoryId().pipe(
       switchMap(id => {
-        return this.postService.filterByCategory(String(id), "", this.getPage());
+        return this.postService.filterByCategory(id, order_by, this.getPage());
       })
     );
+  }
+
+  sortList(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { order_by: this.sortCriterion.value },
+      queryParamsHandling: 'merge',
+      skipLocationChange: true
+    });
   }
 
   getPage(): number {
@@ -152,7 +171,10 @@ export class PostListComponent implements OnInit {
     const page = Number(this.queryParams["page"]);
     if (page && page > 1) {
       this.queryParams["page"] = page - 1;
-      this.router.navigate(["/home"], { queryParams: this.queryParams });
+      this.router.navigate(["/home"], {
+        queryParams: this.queryParams,
+        skipLocationChange: true
+      });
     }
   }
 
@@ -163,7 +185,10 @@ export class PostListComponent implements OnInit {
     }
     if (!this.isLastPage) {
       this.queryParams["page"] = page + 1;
-      this.router.navigate(["/home"], { queryParams: this.queryParams });
+      this.router.navigate(["/home"], {
+        queryParams: this.queryParams,
+        skipLocationChange: true
+      });
     }
   }
 
