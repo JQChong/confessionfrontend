@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -40,6 +40,8 @@ import { ClientLayoutComponent } from './client-layout/client-layout.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { SubmitCommentComponent } from './post-page/submit-comment/submit-comment.component';
 import { SubmitPostComponent } from './post-edit/post-edit.component';
+import { JwtInterceptor } from './api-auth/jwt.interceptor';
+import { RefreshInterceptor } from './api-auth/refresh.interceptor';
 
 @NgModule({
   declarations: [
@@ -84,7 +86,10 @@ import { SubmitPostComponent } from './post-edit/post-edit.component';
     MatCheckboxModule,
     MatSelectModule
   ],
-  providers: [ComponentBridgingService],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: RefreshInterceptor, multi: true },
+    ComponentBridgingService],
   bootstrap: [AppComponent],
 })
 export class AppModule { }

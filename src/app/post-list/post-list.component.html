@@ -22,7 +22,7 @@
                 <div style="margin-bottom: 20px">{{ card.preview }}</div>
                 <div class="same-line">
                     <mat-chip-list>
-                        <mat-chip *ngFor="let category of card.categories" [routerLink]="['/home']" skipLocationChange
+                        <mat-chip *ngFor="let category of card.categories" [routerLink]="['/home']" [skipLocationChange]="true"
                             [queryParams]="{category: category.name}">
                             {{ category.name }}
                         </mat-chip>
