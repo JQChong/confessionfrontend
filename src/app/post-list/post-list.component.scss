@@ -4,17 +4,18 @@
 }
 
 .reaction-summary {
-    position: absolute;
-    right   : 20px;
-    color: #959595;
+    margin-right: 10px;
+    color       : #959595;
 }
 
 .paginator {
-    float: right;
+    text-align     : center;
+    display        : flex;
+    justify-content: space-between;
 }
 
 .paginator>* {
-    margin: 5px;
+    margin: 16px;
 }
 
 .mat-card {
@@ -22,6 +23,12 @@
 }
 
 .mat-card:hover {
-    background-color: rgba(0, 0, 0, 0.001);
-    transition: all 0.5s;
+    background-color: rgba(0, 0, 0, 0.01);
+    transition      : all 0.5s;
+}
+
+.mat-chip {
+    min-height: 20px;
+    height    : 24px !important;
+    cursor    : pointer
 }

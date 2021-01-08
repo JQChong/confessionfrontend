@@ -1,30 +1,33 @@
-<div style="margin: 24px;">
-    <h1>Confess!</h1>
-    <p>
-        Have something you wanted to say for a long time? Say it here! No one will know who you are.
-        <br>
-        Please remember to be socially responsible. No racial, religious or other forms of sensitive
-        material.
-        <br>
-        Happy confessing!
-    </p>
-    <section>
+<mat-card style="margin: 24px;">
+    <mat-card-header style="margin-top:12px;">
+        <mat-card-title>Confess!</mat-card-title>
+        <mat-card-subtitle>
+            Have something you wanted to say for a long time?
+            Say it here! No one will know who you are.
+            Please do not post any racial, religious or other forms of sensitive material.
+            Happy confessing!
+        </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content style="padding-left: 17px; padding-right: 20px;">
         <form [formGroup]="confessionForm" (ngSubmit)="onSubmit()">
-            <mat-form-field style="width:90%; max-width:750px;">
+            <mat-form-field style="width: 100%;">
                 <textarea matNativeControl rows="6" matInput formControlName="text"
                     placeholder="Your Confession"></textarea>
             </mat-form-field>
             <br>
-            Categories:
-            <label *ngFor="let category of allCategories">
-                <input type="checkbox" [formControlName]="category.name" [value]="category">
-                {{ category.name }}
-            </label>
+            <div>
+                <h3>Pick a Category</h3>
+                <mat-checkbox *ngFor="let category of allCategories" formControlName="{{ category.name }}"
+                    color="primary">{{ category.name }}
+                </mat-checkbox>
+            </div>
             <br>
             <br>
-            <button id="submitBtn" mat-raised-button
-                [disabled]="!confessionForm.dirty || !confessionForm.valid || !isPostValid()"
-                type="submit">Submit</button>
+            <mat-card-actions align="end">
+                <button id="submitBtn" mat-raised-button
+                    [disabled]="!confessionForm.dirty || !confessionForm.valid || !isPostValid()"
+                    type="submit">Submit</button>
+            </mat-card-actions>
         </form>
-    </section>
-</div>
+    </mat-card-content>
+</mat-card>

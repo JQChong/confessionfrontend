@@ -45,10 +45,10 @@ export class ClientLayoutComponent implements OnInit {
   }
 
   @HostListener('window:resize', ['$event'])
-  getScreenHeight(event?){
-    if(window.innerHeight<=412){
+  getScreenHeight(event?) {
+    if (window.innerHeight <= 412) {
       this.bottomClass = 'bottomRelative';
-    }else{
+    } else {
       this.bottomClass = 'bottomStick';
     }
   }
@@ -62,14 +62,15 @@ export class ClientLayoutComponent implements OnInit {
   }
 
   onClick(category: string) {
-    this.router.navigate(['home'], { queryParams: { category } });
+    this.router.navigate(['home'], { queryParams: { category }, skipLocationChange: true });
   }
 
   searchOnEnter(term: string) {
     if (term) {
-      this.router.navigate(['home'], { queryParams: { search: term } });
+      this.router.navigate(['home'], { queryParams: { search: term }, skipLocationChange: true });
     } else {
       this.router.navigate(['home']);
     }
   }
+
 }

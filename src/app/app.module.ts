@@ -29,6 +29,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatRippleModule } from '@angular/material/core';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ComponentBridgingService } from './model-service/componentbridging.service';
@@ -36,6 +39,7 @@ import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
 import { ClientLayoutComponent } from './client-layout/client-layout.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { SubmitCommentComponent } from './post-page/submit-comment/submit-comment.component';
+import { SubmitPostComponent } from './post-edit/post-edit.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +53,8 @@ import { SubmitCommentComponent } from './post-page/submit-comment/submit-commen
     AdminLayoutComponent,
     ClientLayoutComponent,
     NotFoundComponent,
-    SubmitCommentComponent
+    SubmitCommentComponent,
+    SubmitPostComponent
   ],
   imports: [
     BrowserModule,
@@ -74,9 +79,12 @@ import { SubmitCommentComponent } from './post-page/submit-comment/submit-commen
     MatProgressSpinnerModule,
     MatRadioModule,
     MatAutocompleteModule,
-    MatRippleModule
+    MatRippleModule,
+    MatChipsModule,
+    MatCheckboxModule,
+    MatSelectModule
   ],
   providers: [ComponentBridgingService],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }
