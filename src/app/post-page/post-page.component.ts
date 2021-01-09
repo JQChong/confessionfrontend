@@ -8,7 +8,7 @@ import { Comment } from '../model-service/comment/comment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map, switchMap, startWith } from 'rxjs/operators';
 import { Observable, zip } from 'rxjs';
-import { FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 
 @Component({
@@ -36,6 +36,7 @@ export class PostPageComponent implements OnInit {
   commentForm: FormGroup;
   posters: string[];
   filteredPosters: Observable<string[]>;
+  valueBeforeChange: string;
   isPostLikeActive: boolean = false;
   bigScreen: boolean;
   nextPage: number = 2;
@@ -68,6 +69,7 @@ export class PostPageComponent implements OnInit {
       poster: ['', Validators.required],
       name: ['', '']
     });
+
     this.commentForm.get('name').disable();
 
     this.commentForm.get('poster').valueChanges
@@ -75,7 +77,9 @@ export class PostPageComponent implements OnInit {
 
     this.filteredPosters = this.commentForm.get('text').valueChanges.pipe(
       startWith(''),
-      map(value => value.includes('@') ? this.filter(value) : [])
+      map(value => new RegExp(".*@.*$").test(value)
+          ? this.filter(value.substr(value.lastIndexOf("@")))
+          : [])
     );
 
     this.isPostLikeActive = JSON.parse(localStorage.getItem(`p${this.postId}`));
@@ -108,16 +112,15 @@ export class PostPageComponent implements OnInit {
           this.prevId = post.prev_id;
           this.nextId = post.next_id;
         } else {
-          this._router.navigate(['/pageNotFound']);
+          this._router.navigate(['/home/404']);
         }
         this.comments = comments.results;
-        this.setAnonymousId(this.comments);
         this.hasNextPage = comments.next !== null ? true : false;
         this.posters = this.getPosters();
       },
       (err) => {
-        this._router.navigate(['/pageNotFound']);
-        // console.log(err);
+        console.log(err);
+        this._router.navigate(['/home/404']);
       })
   }
 
@@ -197,6 +200,7 @@ export class PostPageComponent implements OnInit {
   resetCommentForm(directives: FormGroupDirective) {
     directives.resetForm();
     this.commentForm.reset();
+    this.commentForm.get('name').disable();
   }
 
   onPosterOptionChange(selectedValue: string) {
@@ -220,12 +224,22 @@ export class PostPageComponent implements OnInit {
     return res;
   }
 
+  getUser(e) {
+    let noLastAlias = this.valueBeforeChange.substr(
+      0,
+      this.valueBeforeChange.lastIndexOf("@")
+    );
+    this.commentForm.get('text').setValue(noLastAlias + e);
+  }
+
+  setValue(e) {
+    this.valueBeforeChange = e;
+  }
+
   filter(value: string): string[] {
-    console.log(value);
-    const filterValue = value.toLowerCase();
     return this.posters.filter(
-      poster => poster.toLowerCase().includes(filterValue)
-    )
+      poster => poster.toLowerCase().indexOf(value.toLowerCase()) === 0
+    );
   }
 
   loadMoreComments() {
@@ -237,18 +251,8 @@ export class PostPageComponent implements OnInit {
           }
           this.hasNextPage = comments.next !== null ? true : false;
           this.nextPage++;
-          this.setAnonymousId(this.comments, (this.nextPage - 2) * 10 + 1);
           this.posters = this.getPosters();
         });
-    }
-  }
-
-  setAnonymousId(comments: Comment[], anonymousId: number = 1) {
-    for (let comment of comments) {
-      if (comment.poster === "Anonymous") {
-        comment.poster = 'Anonymous#' + anonymousId;
-        anonymousId++;
-      }
     }
   }
 
