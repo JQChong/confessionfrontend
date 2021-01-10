@@ -30,7 +30,7 @@
                 <form [formGroup]="commentForm" #formDirective="ngForm" class="comment">
                     <mat-form-field floatLabel="never" style="padding:5px; width:98%;">
                         <mat-label>Write a comment...</mat-label>
-                        <textarea matInput #text formControlName="text" [matAutocomplete]="auto" (keyup)="setValue(text.value)"></textarea>
+                        <textarea matInput #text formControlName="text" [matAutocomplete]="auto" (keyup)="setValue(text)"></textarea>
                         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="getUser($event.option.value)"> 
                             <mat-option #option *ngFor="let poster of filteredPosters | async" [value]="poster">
                                 {{poster}}

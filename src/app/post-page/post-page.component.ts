@@ -44,6 +44,7 @@ export class PostPageComponent implements OnInit {
   postId: number;
   prevId: number;
   nextId: number;
+  cursorPosition: number;
 
   constructor(
     private _postService: PostService,
@@ -77,9 +78,10 @@ export class PostPageComponent implements OnInit {
 
     this.filteredPosters = this.commentForm.get('text').valueChanges.pipe(
       startWith(''),
-      map(value => new RegExp(".*@.*$").test(value)
-          ? this.filter(value.substr(value.lastIndexOf("@")))
-          : [])
+      map(value => {
+        const beforeCursor = value.substr(0, this.cursorPosition + 1);
+        return this.filter(beforeCursor.substr(beforeCursor.lastIndexOf("@")));
+      })
     );
 
     this.isPostLikeActive = JSON.parse(localStorage.getItem(`p${this.postId}`));
@@ -192,9 +194,10 @@ export class PostPageComponent implements OnInit {
       poster: poster ? poster : 'Anonymous'
     }
     this._commentService.createComment(newComment)
-      .subscribe(() => { 
+      .subscribe(() => {
         this._dialog.open(SubmitCommentComponent);
-        this.resetCommentForm(directives); });
+        this.resetCommentForm(directives);
+      });
   }
 
   resetCommentForm(directives: FormGroupDirective) {
@@ -225,15 +228,15 @@ export class PostPageComponent implements OnInit {
   }
 
   getUser(e) {
-    let noLastAlias = this.valueBeforeChange.substr(
-      0,
-      this.valueBeforeChange.lastIndexOf("@")
-    );
-    this.commentForm.get('text').setValue(noLastAlias + e);
+    const beforeCursor = this.valueBeforeChange.substr(0, this.cursorPosition);
+    const noAlias = beforeCursor.substr(0, beforeCursor.lastIndexOf('@'));
+    const afterCursor = this.valueBeforeChange.substr(this.cursorPosition);
+    this.commentForm.get('text').setValue(noAlias + e + afterCursor);
   }
 
   setValue(e) {
-    this.valueBeforeChange = e;
+    this.valueBeforeChange = e.value;
+    this.cursorPosition = e.selectionStart;
   }
 
   filter(value: string): string[] {
