@@ -1,33 +1,33 @@
-<!-- TODO style with CSS -->
-<mat-card>
-    <mat-card-header>
+<mat-card style="margin: 24px;">
+    <mat-card-header style="margin-top:12px;">
         <mat-card-title>Confess!</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-        <p>
-            Have something you wanted to say for a long time? Say it here! No one will know who
-            you
-            are.
-        </p>
-        <p>
-            Please remember to be socially responsible. No racial, religious or other forms of
-            sensitive material.
-        </p>
-        <p>
+        <mat-card-subtitle>
+            Have something you wanted to say for a long time?
+            Say it here! No one will know who you are.
+            Please do not post any racial, religious or other forms of sensitive material.
             Happy confessing!
-        </p>
-    </mat-card-content>
-    <div>
+        </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content style="padding-left: 17px; padding-right: 20px;">
         <form [formGroup]="confessionForm" (ngSubmit)="onSubmit()">
-            <mat-form-field style="width:90%; max-width:750px;">
-                <textarea rows="6" matInput formControlName="text"
+            <mat-form-field style="width: 100%;">
+                <textarea matNativeControl rows="6" matInput formControlName="text"
                     placeholder="Your Confession"></textarea>
             </mat-form-field>
-            <p>
+            <br>
+            <div>
+                <h3>Pick a Category</h3>
+                <mat-checkbox *ngFor="let category of allCategories" formControlName="{{ category.name }}"
+                    color="primary">{{ category.name }}
+                </mat-checkbox>
+            </div>
+            <br>
+            <br>
+            <mat-card-actions align="end">
                 <button id="submitBtn" mat-raised-button
                     [disabled]="!confessionForm.dirty || !confessionForm.valid || !isPostValid()"
                     type="submit">Submit</button>
-            </p>
+            </mat-card-actions>
         </form>
-    </div>
+    </mat-card-content>
 </mat-card>

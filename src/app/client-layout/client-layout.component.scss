@@ -1,7 +1,24 @@
-#home:link, #home:hover, #home:visited, #home:active {
+#home:link,
+#home:hover,
+#home:visited,
+#home:active {
     color: #555555;
 }
 
-mat-sidenav{
-    width: 12.5%;
+.longSearchBar {
+    width: 300%;
+}
+
+.bottomStick {
+    position: absolute;
+    bottom: 1%;
+}
+
+.bottomRelative {
+    position: relative;
+}
+
+a {
+    width: 100%;
+    text-align: left;
 }

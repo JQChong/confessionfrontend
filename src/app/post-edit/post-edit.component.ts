@@ -1,6 +1,7 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, NgForm } from '@angular/forms';
-import { MatSnackBar, MatSnackBarConfig, MatSnackBarRef } from '@angular/material/snack-bar';
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { CategoryService } from '../model-service/category/category.service';
 import { Post } from '../model-service/post/post';
 import { PostService } from '../model-service/post/post.service';
 
@@ -16,27 +17,37 @@ export class PostEditComponent implements OnInit {
    * captcha in the form
    */
 
+  allCategories = [];
   confessionForm: FormGroup;
-  configSuccess: MatSnackBarConfig = {
-    panelClass: "style-success",
-    duration: 10000,
-    verticalPosition: "bottom"
-  }
+
 
   constructor(
+    private categoryService: CategoryService,
     private postService: PostService,
-    private snackBar: MatSnackBar
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
     this.confessionForm = new FormGroup({
-      text: new FormControl('')
+      text: new FormControl()
     });
+    this.categoryService.getCategories().subscribe(
+      data => {
+        this.allCategories = data;
+        this.allCategories.forEach(
+          category => this.confessionForm.addControl(String(category.name), new FormControl())
+        );
+      },
+      error => {
+        console.log(error);
+      }
+    );
+    console.log(this.confessionForm)
   }
 
   isPostValid(): boolean {
     const text = this.confessionForm.controls['text'].value;
-    return text.trim() != "";
+    return text != null && text.trim() != "";
   }
 
   onSubmit(): void {
@@ -44,9 +55,10 @@ export class PostEditComponent implements OnInit {
       return;
     }
     const post = this.getPost();
+    console.log("postService.createPost with this post:", post);
     this.postService.createPost(post).subscribe();
     this.confessionForm.reset();
-    this.openSnackBar();
+    this.dialog.open(SubmitPostComponent);
   }
 
   getPost(): Post {
@@ -57,28 +69,23 @@ export class PostEditComponent implements OnInit {
     post.likes = 0;
     post.time_created = new Date();
     post.approved = false;  // TODO make sure is false for production
+    const categories = [];
+    for (let i = 0; i < this.allCategories.length; i++) {
+      const category = this.allCategories[i];
+      if (this.confessionForm.controls[category.name].value) {
+        categories.push(i + 1); // database is 1-indexed...
+      }
+    }
+    post.category = categories;
     return post;
-  }
-
-  openSnackBar(): void {
-    this.snackBar.openFromComponent(SubmittedComponent, {
-      ...this.configSuccess
-    });
   }
 
 }
 
 @Component({
-  selector: 'submitted-snack',
-  templateUrl: 'submitted-snack.html',
-  styles: [`
-    .submitted {
-      color: white;
-    }
-  `],
+  selector: 'submit-post',
+  templateUrl: 'submit-post-dialog.html',
 })
-export class SubmittedComponent {
-  constructor(
-    public snackBarRef: MatSnackBarRef<SubmittedComponent>
-  ) { }
+export class SubmitPostComponent {
+
 }

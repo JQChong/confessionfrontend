@@ -1,3 +1,8 @@
+/**
+ * Credits: Nicholas Cristian Fernando, 29th NUSSU commIT Technical Director.
+ * (Read: Jing Quan is lazy and plagiarized code from his codirector)
+ */
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpRequest } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';

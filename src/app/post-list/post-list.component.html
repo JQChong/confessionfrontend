@@ -1,17 +1,38 @@
-<div id="Results" style="width: 95%; max-width: 750px;">
+<div *ngIf="cards.length > 0" style="width: 95%; margin: auto;">
+    <div style="float: right; margin-right: 15px;">
+        <span>Sort by: </span>
+        <mat-form-field>
+            <mat-select [formControl]="sortCriterion" (selectionChange)="sortList()">
+                <mat-option value="-time_created">Latest</mat-option>
+                <mat-option value="popular">Popular</mat-option>
+                <mat-option value="-likes">Likes</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <br>
+    <br>
     <mat-list>
-        <mat-card *ngFor="let card of cards" [routerLink]="['/home/post']"
-            [queryParams]="{id: card.id}">
-            <mat-card-header>
+        <mat-card *ngFor="let card of cards" [routerLink]="['/home/post']" [queryParams]="{id: card.id}"
+            style="margin: 15px;">
+            <mat-card-header class="same-line">
                 <mat-card-title><strong>#{{ card.id }}</strong></mat-card-title>
+                <mat-card-subtitle>{{ card.date | date:'dd LLLL yyyy, h:mm a' }}</mat-card-subtitle>
             </mat-card-header>
-            <mat-card-content>
-                <div>{{ card.preview }}</div>
+            <mat-card-content style="margin-left: 17px;">
+                <div style="margin-bottom: 20px">{{ card.preview }}</div>
                 <div class="same-line">
-                    <span class="date">{{ card.date }}</span>
+                    <mat-chip-list>
+                        <mat-chip *ngFor="let category of card.categories" [routerLink]="['/home']" [skipLocationChange]="true"
+                            [queryParams]="{category: category.name}">
+                            {{ category.name }}
+                        </mat-chip>
+                    </mat-chip-list>
+                    <span class="fill-remaining-space"></span>
                     <div class="same-line reaction-summary">
-                        <span class="material-icons" style="margin: 5px;">thumb_up</span>
-                        <span>{{ card.likes }}</span>
+                        <span class="material-icons" style="margin: 4px;">thumb_up</span>
+                        <span style="margin-right: 8px;">{{ card.likes }}</span>
+                        <span class="material-icons" style="margin: 4px;">comment</span>
+                        <span>{{ card.comments }}</span>
                     </div>
                 </div>
             </mat-card-content>
@@ -20,20 +41,23 @@
     <!-- can only query specific page of posts -->
     <!-- mat-paginator needs all data -->
     <!-- so create custom "paginator" -->
-    <div class="paginator">
-        <button mat-raised-button (click)="onPreviousClick()"
-            [disabled]="isFirstPage">Previous</button>
-        <span>Page {{ page }}</span>
-        <button mat-raised-button (click)="onNextClick()" [disabled]="isLastPage">Next</button>
+    <div class="paginator same-line">
+        <button mat-button (click)="onPreviousClick()" [disabled]="isFirstPage">
+            <mat-icon>navigate_before</mat-icon>Previous
+        </button>
+        <span>Page {{ this.getPage() }}</span>
+        <button mat-button (click)="onNextClick()" [disabled]="isLastPage">
+            Next<mat-icon>navigate_next</mat-icon>
+        </button>
     </div>
 </div>
-<div id="NoResult" hidden="true" style="margin: 28px;">
+<div *ngIf=" cards.length==0" style="margin: 28px;">
     <p style="font-size: 20px;"><b>No results!</b></p>
     <br>
     <p>Suggestions:</p>
     <ul>
-        <li>Make sure that all words are spelled as intended.</li>
-        <li>Try more general keywords.</li>
-        <li>Try incomplete keywords (e.g. keywor).</li>
+        <li>Try searching for more general keywords.</li>
+        <li>Try searching for incomplete keywords (e.g. keywor).</li>
+        <li>Try refreshing the page (if you haven't done so).</li>
     </ul>
 </div>

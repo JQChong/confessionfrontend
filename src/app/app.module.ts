@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -28,6 +28,10 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatRippleModule } from '@angular/material/core';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ComponentBridgingService } from './model-service/componentbridging.service';
@@ -35,6 +39,9 @@ import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
 import { ClientLayoutComponent } from './client-layout/client-layout.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { SubmitCommentComponent } from './post-page/submit-comment/submit-comment.component';
+import { SubmitPostComponent } from './post-edit/post-edit.component';
+import { JwtInterceptor } from './api-auth/jwt.interceptor';
+import { RefreshInterceptor } from './api-auth/refresh.interceptor';
 
 @NgModule({
   declarations: [
@@ -48,7 +55,8 @@ import { SubmitCommentComponent } from './post-page/submit-comment/submit-commen
     AdminLayoutComponent,
     ClientLayoutComponent,
     NotFoundComponent,
-    SubmitCommentComponent
+    SubmitCommentComponent,
+    SubmitPostComponent
   ],
   imports: [
     BrowserModule,
@@ -72,9 +80,16 @@ import { SubmitCommentComponent } from './post-page/submit-comment/submit-commen
     MatPaginatorModule,
     MatProgressSpinnerModule,
     MatRadioModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatRippleModule,
+    MatChipsModule,
+    MatCheckboxModule,
+    MatSelectModule
   ],
-  providers: [ComponentBridgingService],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: RefreshInterceptor, multi: true },
+    ComponentBridgingService],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }
