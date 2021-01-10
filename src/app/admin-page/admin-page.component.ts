@@ -20,14 +20,13 @@ export class AdminPageComponent implements AfterViewInit, OnInit {
    * Intended method: Include two lists/tables (your choice), one is for unapproved posts, the other is for
    * unapproved comments. Admin should be able to approve a post in minimal moves, e.g. within 2 clicks.
    */
-  
+
   posts: PostDataSource;
   comments: CommentDataSource;
 
-  postTableColumns: string[] = ['id', 'text', 'time_created', 'action'];
+  postTableColumns: string[] = ['position' ,'text', 'time_created', 'action'];
   commentTableColumns: string[] = [
-    'id',
-    'post',
+    'position',
     'text',
     'poster',
     'time_created',
@@ -50,37 +49,61 @@ export class AdminPageComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
-    this.postsPaginator.page.pipe(tap(() => this.loadPostPage())).subscribe();
+    this.postsPaginator.page
+      .pipe(tap(() => this.loadPostPage('GET')))
+      .subscribe();
     this.commentsPaginator.page
-      .pipe(tap(() => this.loadCommentPage()))
+      .pipe(tap(() => this.loadCommentPage('GET')))
       .subscribe();
   }
 
-  loadPostPage() {
-    this.posts.loadPost(this.postsPaginator.pageIndex + 1);
+  loadPostPage(status: 'GET' | 'UPDATE') {
+    if (status === 'UPDATE') {
+      const currentLength = this.postsPaginator.length - 1;
+      if (
+        currentLength / 10 === this.postsPaginator.pageIndex &&
+        currentLength !== 0
+      ) {
+        return this.postsPaginator.previousPage();
+      }
+    }
+    return this.posts.loadPost(this.postsPaginator.pageIndex + 1);
   }
 
-  loadCommentPage() {
-    this.comments.loadComment(this.commentsPaginator.pageIndex + 1);
+  loadCommentPage(status: 'GET' | 'UPDATE') {
+    if (status === 'UPDATE') {
+      const currentLength = this.commentsPaginator.length - 1;
+      if (
+        currentLength / 10 === this.commentsPaginator.pageIndex &&
+        currentLength !== 0
+      ) {
+        return this.commentsPaginator.previousPage();
+      }
+    }
+    return this.comments.loadComment(this.commentsPaginator.pageIndex + 1);
   }
 
   updateState(type: 'Comment' | 'Post', state: Boolean, id: number): void {
     console.log('Type', type, 'State', state, 'Id', id);
     if (type === 'Post') {
       if (state) {
-        this.postService.approvePost(id).subscribe(() => this.loadPostPage());
+        this.postService
+          .approvePost(id)
+          .subscribe(() => this.loadPostPage('UPDATE'));
       } else {
-        this.postService.deletePost(id).subscribe(() => this.loadPostPage());
+        this.postService
+          .deletePost(id)
+          .subscribe(() => this.loadPostPage('UPDATE'));
       }
     } else if (type === 'Comment') {
       if (state) {
         this.commentService
           .approveComment(id)
-          .subscribe(() => this.loadCommentPage());
+          .subscribe(() => this.loadCommentPage('UPDATE'));
       } else {
         this.commentService
           .deleteComment(id)
-          .subscribe(() => this.loadCommentPage());
+          .subscribe(() => this.loadCommentPage('UPDATE'));
       }
     } else {
       throw new Error('Wrong type');
