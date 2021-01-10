@@ -24,10 +24,9 @@ export class AdminPageComponent implements AfterViewInit, OnInit {
   posts: PostDataSource;
   comments: CommentDataSource;
 
-  postTableColumns: string[] = ['id', 'text', 'time_created', 'action'];
+  postTableColumns: string[] = ['position' ,'text', 'time_created', 'action'];
   commentTableColumns: string[] = [
-    'id',
-    'post',
+    'position',
     'text',
     'poster',
     'time_created',

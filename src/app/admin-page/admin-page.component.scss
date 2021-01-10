@@ -1,20 +1,31 @@
-mat-table, mat-paginator{
-  width: 90%;
-  margin-left: 5%;
-  margin-right: 5%;
-}
+// mat-table, mat-paginator{
+//   width: 90%;
+//   margin-left: 5%;
+//   margin-right: 5%;
+// }
 
 mat-header-cell,
 mat-cell {
   justify-content: center;
-}
-
-.header{
   text-align: center;
 }
 
+@media only screen and (max-width: 876px){
+  .center {
+    margin: auto;
+    padding: 10px;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
 .table {
-  margin-top: 50px;
+  margin: auto; 
+  margin-bottom: 5%;
+  margin-top: 5%;
+  padding: 30px;
+  width: 90%;
+  text-align: center;
 }
 
 .message {
@@ -29,7 +40,67 @@ mat-cell {
   padding: 10px;
 }
 
-.mat-column-id {
-  flex: 0 0 2% !important;
-  min-width: 50px !important;
+.mat-column-position {
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 5% !important;
+  width: 5% !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  word-break: break-word;
+
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
+
+.mat-column-text {
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 65% !important;
+  width: 65% !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  word-break: break-word;
+
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+.mat-column-time_created {
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 10% !important;
+  width: 10% !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  word-break: break-word;
+
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+.mat-column-action {
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 20% !important;
+  width: 20% !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  word-break: break-word;
+
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
