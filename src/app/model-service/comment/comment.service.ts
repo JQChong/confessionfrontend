@@ -83,7 +83,6 @@ export class CommentDataSource implements DataSource<Comment> {
         finalize(() => this.loadingSubject.next(false))
       )
       .subscribe((comments) => {
-        console.log(comments)
         this.commentsLength.next(comments.count)
         this.commentsSubject.next(comments.results)
       });
