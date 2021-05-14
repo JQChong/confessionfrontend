@@ -1,0 +1,9 @@
+runtime: nodejs10
+handlers:
+- url: /
+  static_files: dist/confessionfrontend/index.html
+  upload: dist/confessionfrontend/index.html
+  secure: always
+- url: /
+  static_dir: dist/confessionfrontend/
+  secure: always
