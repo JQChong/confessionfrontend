@@ -3,6 +3,7 @@
  * (Read: Jing Quan is lazy and plagiarized code from his codirector)
  */
 
+import { environment } from './../../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpRequest } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
@@ -16,8 +17,8 @@ import { ComponentBridgingService } from '../componentbridging.service';
     providedIn: 'root'
 })
 export class LoginService {
-    private loginApiUrl = 'http://localhost:8000/api/token';
-    private refreshApiUrl = 'http://localhost:8000/api/token/refresh';
+    private loginApiUrl = environment.apiUrl + 'token';
+    private refreshApiUrl = environment.apiUrl + 'token/refresh';
 
     private currentUserSubject!: BehaviorSubject<User>;
     public currentUser!: Observable<User>;

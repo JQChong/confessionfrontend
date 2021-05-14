@@ -1,3 +1,4 @@
+import { environment } from './../../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
@@ -15,7 +16,7 @@ export class PostService {
   ) { }
 
   // when url is confirmed, this needs to be moved to environment
-  private baseUrlPosts = 'http://localhost:8000/api/posts';
+  private baseUrlPosts = environment.apiUrl + 'posts';
 
   getPostById(id: Number): Observable<any> {
     return this.httpClient.get(`${this.baseUrlPosts}/${id}`);

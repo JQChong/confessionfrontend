@@ -1,3 +1,4 @@
+import { environment } from './../../../environments/environment';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { BaseService } from '../base.service';
@@ -15,7 +16,7 @@ export class CommentService {
   ) { }
 
   // when url is confirmed, this needs to be moved to environment
-  private baseUrlComments = 'http://localhost:8000/api/comments';
+  private baseUrlComments =  environment.apiUrl + 'comments';
 
   // note that only approved posts will be shown.
   getCommentsByPost(post_id: number, page: number = 1): Observable<any> {
