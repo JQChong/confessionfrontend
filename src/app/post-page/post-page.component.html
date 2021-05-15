@@ -1,4 +1,4 @@
-<div class="main" [class.smallScreen]="!bigScreen">
+<div class="main" [class.bigScreen]="!smallScreen">
     <div class="navigation">
         <button mat-button [disabled]="prevId === -1" (click)="goPrevious(formDirective)">
             <mat-icon>navigate_before</mat-icon>Previous
@@ -17,21 +17,21 @@
         </mat-card-content>
         <mat-card-header>
             <mat-card-subtitle>
-                {{post.likes <= 1 ? post.likes + " Like" : post.likes + " Likes"}}
-                &middot;
-                {{comments.length === 1 ? comments.length + " Comment" : comments.length + " Comments"}}
-            </mat-card-subtitle>
+                {{post.likes <= 1 ? post.likes + " Like" : post.likes + " Likes" }} &middot; {{comments.length===1 ?
+                    comments.length + " Comment" : comments.length + " Comments" }} </mat-card-subtitle>
         </mat-card-header>
         <mat-card-actions style="padding:10px 25px;">
-            <button mat-raised-button [color]="isPostLikeActive ? 'warn' : 'primary'" (click)="updatePostLikes()">LIKE</button>
+            <button mat-raised-button [color]="isPostLikeActive ? 'warn' : 'primary'"
+                (click)="updatePostLikes()">LIKE</button>
         </mat-card-actions>
         <mat-card-content>
             <div>
                 <form [formGroup]="commentForm" #formDirective="ngForm" class="comment">
                     <mat-form-field floatLabel="never" style="padding:5px; width:98%;">
                         <mat-label>Write a comment...</mat-label>
-                        <textarea matInput #text formControlName="text" [matAutocomplete]="auto" (keyup)="setValue(text)"></textarea>
-                        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="getUser($event.option.value)"> 
+                        <textarea matInput #text formControlName="text" [matAutocomplete]="auto"
+                            (keyup)="setValue(text)"></textarea>
+                        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="getUser($event.option.value)">
                             <mat-option #option *ngFor="let poster of filteredPosters | async" [value]="poster">
                                 {{poster}}
                             </mat-option>
@@ -44,17 +44,22 @@
                                 Comment anonymously
                             </mat-radio-button>
                             <br>
+                            <div style="margin-top: 20px;" *ngIf="smallScreen"></div>
                             <mat-radio-button value="name.value" color="primary" style="padding:0px 10px;" #reveal>
                                 Reveal yourself as
+                                <br *ngIf="smallScreen">
                                 <mat-form-field floatLabel="never">
                                     <mat-label>your name or nickname</mat-label>
                                     <input type="text" matInput #name formControlName="name">
-                                    <mat-error *ngIf="commentForm.get('name').errors?.required">This field is required</mat-error>
+                                    <mat-error *ngIf="commentForm.get('name').errors?.required">This field is
+                                        required</mat-error>
                                 </mat-form-field>
                             </mat-radio-button>
                         </mat-radio-group>
                         <span style="display:flex; justify-content:flex-end;">
-                            <button mat-raised-button type="submit" (click)="createNewComment(text.value, name.value, formDirective)" [disabled]="!commentForm.valid" style="height:35px;">
+                            <button mat-raised-button type="submit"
+                                (click)="createNewComment(text.value, name.value, formDirective)"
+                                [disabled]="!commentForm.valid" style="height:35px;">
                                 Submit
                             </button>
                         </span>
@@ -69,14 +74,12 @@
                     <br>
                     <span style="display:flex; justify-content:space-between">
                         <span style="color:	#808080;">
-                            {{comment.likes <= 1 ? comment.likes + ' Like' : comment.likes + ' Likes'}}
-                            &middot;
-                            {{comment.time_created | date:'short'}}
+                            {{comment.likes <= 1 ? comment.likes + ' Like' : comment.likes + ' Likes' }} &middot;
+                                {{comment.time_created | date:'short'}} </span>
+                                <span [class.red]="isCommentLikeActive(comment.id)">
+                                    <a style="cursor:pointer;" (click)="updateCommentLikes(comment)">Like</a>
+                                </span>
                         </span>
-                        <span [class.red]="isCommentLikeActive(comment.id)">
-                            <a style="cursor:pointer;" (click)="updateCommentLikes(comment)">Like</a>
-                        </span>
-                    </span>
                 </div>
             </div>
             <span style="display:flex; justify-content:flex-end;">

@@ -3,6 +3,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from '../model-service/category/category';
 import { CategoryService } from '../model-service/category/category.service';
+import { ComponentBridgingService } from '../model-service/componentbridging.service';
 import { IconService } from '../model-service/icon.service';
 
 @Component({
@@ -32,7 +33,7 @@ export class ClientLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.breakpointObserver
-      .observe([Breakpoints.Small, Breakpoints.HandsetPortrait])
+      .observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.HandsetPortrait])
       .subscribe((state: BreakpointState) => {
         this.smallScreen = state.matches;
         this.opened = !state.matches;

@@ -1,6 +1,6 @@
 <mat-sidenav-container style="height: 100%;">
   <mat-sidenav [mode]="smallScreen ? 'over' : 'side'" [opened]="opened" (closed)="closeSideNav()">
-    <div style="position: sticky; top: 0; z-index: 1; background-color: #ffffff;">
+    <div style="background-color: #ffffff;">
       <div style="width: 100px; height: 100px; margin: auto;">
         <img src="../../assets/Logo.png" style="max-width: 100%; max-height: 100%;">
       </div>
@@ -25,7 +25,7 @@
       </mat-nav-list>
     </div>
     <br>
-    <div style="position: sticky; bottom: 11px; background-color: #ffffff;">
+    <div style="background-color: #ffffff;">
       <hr style="width: 90%;">
       <a mat-button href="https://www.facebook.com/nus.msl.ufo" target="_blank">
         <mat-icon matPrefix>facebook</mat-icon>
@@ -41,7 +41,7 @@
     </div>
   </mat-sidenav>
   <mat-sidenav-content>
-    <mat-toolbar color="primary" class="sticky" style="margin: 0">
+    <mat-toolbar color="primary" [ngClass]="{'sticky': !smallScreen}" style="margin: 0">
       <mat-toolbar-row>
         <span>
           <button mat-icon-button fxHide.gt-sm="true" (click)="openSideNav()">

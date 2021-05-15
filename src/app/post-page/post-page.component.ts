@@ -38,7 +38,7 @@ export class PostPageComponent implements OnInit {
   filteredPosters: Observable<string[]>;
   valueBeforeChange: string;
   isPostLikeActive: boolean = false;
-  bigScreen: boolean;
+  smallScreen: boolean;
   nextPage: number = 2;
   hasNextPage: boolean = false;
   postId: number;
@@ -60,9 +60,9 @@ export class PostPageComponent implements OnInit {
     this.reloadData();
 
     this._breakpointObserver
-      .observe([Breakpoints.Small, Breakpoints.HandsetPortrait])
+      .observe([Breakpoints.XSmall, Breakpoints.HandsetPortrait])
       .subscribe((state: BreakpointState) => {
-        this.bigScreen = state.matches;
+        this.smallScreen = state.matches;
       });
 
     this.commentForm = this._fb.group({
